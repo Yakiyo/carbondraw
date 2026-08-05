@@ -18,7 +18,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home.fxml"));
         Parent root = fxmlLoader.load();
-        scene = new Scene(root, 1440, 810);
+        scene = new Scene(root, 1920, 1000);
 
         stage.setTitle("Carbon Draw - The Roguelike Deckbuilder");
         stage.setScene(scene);

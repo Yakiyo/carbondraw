@@ -4,25 +4,70 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
 
-<AnchorPane styleClass="root-pane" stylesheets="@home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs.GameController" prefWidth="1440.0" prefHeight="810.0">
+<AnchorPane styleClass="root-pane" stylesheets="@home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs.GameController" prefWidth="1920.0" prefHeight="1000.0">
     <children>
-        <!-- Center/Top Game Info -->
-        <VBox alignment="CENTER" AnchorPane.topAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Label styleClass="game-title" text="MAIN GAME" />
-            <Label fx:id="gameInfoLabel" styleClass="status-label" text="Difficulty: Normal  |  Target: 2,500 Pts" />
-        </VBox>
+        <!-- Main Layout Split -->
+        <HBox AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            
+            <!-- LEFT PANEL -->
+            <VBox styleClass="left-panel" prefWidth="350.0" minWidth="350.0" spacing="20.0" alignment="TOP_CENTER">
+                <!-- Top Info (Difficulty/Target) -->
+                <VBox alignment="CENTER" spacing="10.0" styleClass="panel-section">
+                    <Label styleClass="game-title" style="-fx-font-size: 32px;" text="CARBON DRAW" />
+                    <Label fx:id="gameInfoLabel" styleClass="status-label" style="-fx-font-size: 14px;" text="Difficulty: Normal  |  Target: 2,500 Pts" />
+                </VBox>
+                
+                <!-- Round Score Placeholder -->
+                <VBox alignment="CENTER" spacing="5.0" styleClass="panel-section">
+                    <Label text="Round Score" styleClass="panel-label"/>
+                    <Label text="0" styleClass="score-label"/>
+                </VBox>
+                
+                <!-- Hands / Discards Placeholders -->
+                <HBox alignment="CENTER" spacing="20.0" styleClass="panel-section">
+                    <VBox alignment="CENTER">
+                        <Label text="Hands" styleClass="panel-label"/>
+                        <Label text="4" styleClass="counter-label"/>
+                    </VBox>
+                    <VBox alignment="CENTER">
+                        <Label text="Discards" styleClass="panel-label"/>
+                        <Label text="3" styleClass="counter-label"/>
+                    </VBox>
+                </HBox>
 
-        <!-- View Hands Button at Bottom Left -->
-        <Button onAction="#handleShowHands" styleClass="menu-button, btn-settings" text="VIEW HANDS" 
-                AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" 
-                style="-fx-pref-width: 200px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
+                <!-- Spacer to push buttons to the bottom -->
+                <Region VBox.vgrow="ALWAYS" />
 
-        <!-- Return Home Button at Bottom Right -->
-        <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="RETURN TO HOME" 
-                AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0" 
-                style="-fx-pref-width: 200px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
+                <!-- Buttons Area -->
+                <VBox spacing="15.0" alignment="CENTER" styleClass="panel-section">
+                    <Button onAction="#handleShowHands" styleClass="menu-button, btn-settings" text="Run Info (Hands)" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
+                    <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="Return to Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
+                </VBox>
+            </VBox>
+            
+            <!-- RIGHT GAME BOARD -->
+            <BorderPane HBox.hgrow="ALWAYS" style="-fx-padding: 30px;">
+                <!-- Top: Jokers -->
+                <top>
+                    <HBox fx:id="jokersContainer" alignment="CENTER" spacing="15.0" prefHeight="150.0" BorderPane.alignment="CENTER" />
+                </top>
+                
+                <!-- Bottom: Player Hand -->
+                <bottom>
+                    <StackPane BorderPane.alignment="CENTER">
+                        <Pane fx:id="cardHandContainer" prefHeight="400.0" prefWidth="1400.0" maxWidth="1400.0" />
+                    </StackPane>
+                </bottom>
+            </BorderPane>
+            
+        </HBox>
 
         <!-- Hands Popup Overlay (Hidden by default) -->
         <AnchorPane fx:id="handsPopup" visible="false" styleClass="popup-overlay" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
