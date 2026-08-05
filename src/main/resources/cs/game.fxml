@@ -27,18 +27,28 @@
                 <!-- Round Score Placeholder -->
                 <VBox alignment="CENTER" spacing="5.0" styleClass="panel-section">
                     <Label text="Round Score" styleClass="panel-label"/>
-                    <Label text="0" styleClass="score-label"/>
+                    <Label fx:id="scoreLabel" text="0" styleClass="score-label"/>
+                </VBox>
+                
+                <!-- Selected Hand Info -->
+                <VBox fx:id="handInfoBox" alignment="CENTER" spacing="5.0" styleClass="panel-section" visible="false">
+                    <Label fx:id="handNameLabel" text="" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+                    <HBox alignment="CENTER" spacing="10.0">
+                        <Label fx:id="baseChipsLabel" text="0" style="-fx-background-color: #2a9df4; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 5 15 5 15; -fx-background-radius: 8;"/>
+                        <Label text="X" style="-fx-text-fill: #ff4d4d; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                        <Label fx:id="multiplierLabel" text="1" style="-fx-background-color: #ff4d4d; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 5 15 5 15; -fx-background-radius: 8;"/>
+                    </HBox>
                 </VBox>
                 
                 <!-- Hands / Discards Placeholders -->
                 <HBox alignment="CENTER" spacing="20.0" styleClass="panel-section">
                     <VBox alignment="CENTER">
                         <Label text="Hands" styleClass="panel-label"/>
-                        <Label text="4" styleClass="counter-label"/>
+                        <Label fx:id="handsLabel" text="4" styleClass="counter-label"/>
                     </VBox>
                     <VBox alignment="CENTER">
                         <Label text="Discards" styleClass="panel-label"/>
-                        <Label text="3" styleClass="counter-label"/>
+                        <Label fx:id="discardsLabel" text="3" styleClass="counter-label"/>
                     </VBox>
                 </HBox>
 
@@ -59,11 +69,17 @@
                     <HBox fx:id="jokersContainer" alignment="CENTER" spacing="15.0" prefHeight="150.0" BorderPane.alignment="CENTER" />
                 </top>
                 
-                <!-- Bottom: Player Hand -->
+                <!-- Bottom: Player Hand and Action Buttons -->
                 <bottom>
-                    <StackPane BorderPane.alignment="CENTER">
-                        <Pane fx:id="cardHandContainer" prefHeight="400.0" prefWidth="1400.0" maxWidth="1400.0" />
-                    </StackPane>
+                    <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+                        <StackPane>
+                            <Pane fx:id="cardHandContainer" prefHeight="400.0" prefWidth="1400.0" maxWidth="1400.0" />
+                        </StackPane>
+                        <HBox alignment="CENTER" spacing="20.0">
+                            <Button onAction="#handlePlayHand" styleClass="menu-button" text="Play Hand" style="-fx-pref-width: 150px; -fx-pref-height: 40px; -fx-font-size: 16px; -fx-background-color: #fca311; -fx-text-fill: white;" />
+                            <Button fx:id="discardButton" onAction="#handleDiscard" styleClass="menu-button" text="Discard" style="-fx-pref-width: 150px; -fx-pref-height: 40px; -fx-font-size: 16px; -fx-background-color: #e63946; -fx-text-fill: white;" />
+                        </HBox>
+                    </VBox>
                 </bottom>
             </BorderPane>
             
@@ -95,6 +111,17 @@
                             <Label text="• Bureaucratic Gridlock (x0 PENALTY): 5 Policy cards of same tier" style="-fx-text-fill: #ff6b6b; -fx-font-size: 16px; -fx-font-weight: bold;"/>
                         </VBox>
                     </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+
+        <!-- Game Over Popup Overlay (Hidden by default) -->
+        <AnchorPane fx:id="gameOverPopup" visible="false" styleClass="popup-overlay" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" spacing="20.0" styleClass="popup-content" AnchorPane.topAnchor="200.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="400.0">
+                    <Label text="Finished!" styleClass="game-title" style="-fx-font-size: 48px;"/>
+                    <Label fx:id="finalScoreLabel" text="Total Score Achieved: 0" styleClass="game-subtitle" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                    <Button onAction="#handleReturnHome" styleClass="menu-button" text="Return to Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #2a9df4; -fx-text-fill: white;" />
                 </VBox>
             </children>
         </AnchorPane>

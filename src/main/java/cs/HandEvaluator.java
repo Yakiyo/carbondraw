@@ -34,6 +34,35 @@ public class HandEvaluator {
         return results;
     }
 
+    /**
+     * Evaluates a subset of selected cards and returns the single highest valid hand.
+     */
+    public static HandResult evaluateSelectedCards(List<Card> selectedCards) {
+        if (selectedCards == null || selectedCards.isEmpty()) {
+            return null;
+        }
+
+        HandResult bestResult = null;
+        int bestPriority = -1;
+
+        // Generate all subsets of selectedCards (size 1 to N)
+        for (int size = selectedCards.size(); size >= 1; size--) {
+            List<List<Card>> combinations = generateCombinations(selectedCards, size);
+            for (List<Card> combo : combinations) {
+                HandResult result = evaluateSingleCombination(combo);
+                if (result != null) {
+                    int priority = getPriority(result.handName());
+                    if (priority > bestPriority) {
+                        bestPriority = priority;
+                        bestResult = result;
+                    }
+                }
+            }
+        }
+        
+        return bestResult;
+    }
+
     private static HandResult findBestHandContainingFirst(List<Card> remaining) {
         Card anchor = remaining.get(0);
         List<Card> pool = new ArrayList<>(remaining);
@@ -69,7 +98,7 @@ public class HandEvaluator {
 
         if (size == 5) {
             long smartGridCount = cards.stream().filter(c -> "Smart Grid AI".equalsIgnoreCase(c.getName())).count();
-            long renewableCount = cards.stream().filter(c -> "Renewable Energy".equalsIgnoreCase(c.getName())).count();
+            long renewableCount = cards.stream().filter(c -> isSuit(c, "renewable")).count();
             if (smartGridCount == 1 && renewableCount == 4) return new HandResult("The Smart Grid", 50, cards);
 
             long biosphereCount = cards.stream().filter(c -> isSuit(c, "biosphere")).count();

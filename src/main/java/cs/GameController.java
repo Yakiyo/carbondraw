@@ -22,6 +22,8 @@ import javafx.scene.shape.Rectangle;
  */
 public class GameController {
 
+    private List<Card> selectedCards = new ArrayList<>();
+
     @FXML
     private Label gameInfoLabel;
 
@@ -30,6 +32,44 @@ public class GameController {
 
     @FXML
     private Pane cardHandContainer;
+
+    @FXML
+    private VBox handInfoBox;
+
+    @FXML
+    private Label handNameLabel;
+
+    @FXML
+    private Label baseChipsLabel;
+
+    @FXML
+    private Label multiplierLabel;
+
+    @FXML
+    private Label discardsLabel;
+
+    @FXML
+    private javafx.scene.control.Button discardButton;
+
+    private List<Card> remainingDeck = new ArrayList<>();
+    private List<Card> currentHand = new ArrayList<>();
+    private int discardsLeft = 3;
+
+    @FXML
+    private Label scoreLabel;
+
+    @FXML
+    private Label handsLabel;
+    
+    @FXML
+    private javafx.scene.layout.AnchorPane gameOverPopup;
+    
+    @FXML
+    private Label finalScoreLabel;
+
+    private int currentScore = 0;
+    private int handsLeft = 4;
+    private int targetScore = 0;
 
     @FXML
     private void handleShowHands(ActionEvent event) {
@@ -49,22 +89,37 @@ public class GameController {
     public void initialize() {
         GameSession session = GameSession.getInstance();
         if (session.getDifficulty() != null) {
+            targetScore = session.getTargetPoints();
             gameInfoLabel.setText(String.format("Difficulty: %s  |  Target: %,d Pts", 
-                session.getDifficulty(), session.getTargetPoints()));
+                session.getDifficulty(), targetScore));
         }
 
         // Deal 10 random cards
-        List<Card> deck = new ArrayList<>(CardData.CARDS);
-        Collections.shuffle(deck);
-        List<Card> initialHand = deck.subList(0, Math.min(10, deck.size()));
+        remainingDeck = new ArrayList<>(CardData.CARDS);
+        Collections.shuffle(remainingDeck);
+        currentHand = new ArrayList<>();
+        for (int i = 0; i < 10 && !remainingDeck.isEmpty(); i++) {
+            currentHand.add(remainingDeck.remove(0));
+        }
 
-        renderCards(initialHand);
+        discardsLeft = 3;
+        currentScore = 0;
+        handsLeft = 4;
+        
+        if (discardsLabel != null) discardsLabel.setText(String.valueOf(discardsLeft));
+        if (discardButton != null) discardButton.setDisable(false);
+        if (scoreLabel != null) scoreLabel.setText("0");
+        if (handsLabel != null) handsLabel.setText(String.valueOf(handsLeft));
+        if (gameOverPopup != null) gameOverPopup.setVisible(false);
+
+        renderCards(currentHand);
     }
 
     private void renderCards(List<Card> cards) {
         if (cardHandContainer == null) return;
         
         cardHandContainer.getChildren().clear();
+        selectedCards.clear();
         
         int n = cards.size();
         if (n == 0) return;
@@ -123,6 +178,20 @@ public class GameController {
             // Install on imageWrapper instead of cardView for better hit detection
             Tooltip.install(imageWrapper, tooltip);
 
+            // Selection Logic
+            imageWrapper.setOnMouseClicked(e -> {
+                if (selectedCards.contains(card)) {
+                    selectedCards.remove(card);
+                    imageWrapper.setTranslateY(0);
+                } else {
+                    if (selectedCards.size() < 5) {
+                        selectedCards.add(card);
+                        imageWrapper.setTranslateY(-15);
+                    }
+                }
+                updateHandInfoDisplay();
+            });
+
             cardHandContainer.getChildren().add(cardView);
         }
     }
@@ -134,6 +203,121 @@ public class GameController {
             App.setRoot("home");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handlePlayHand(ActionEvent event) {
+        if (selectedCards.isEmpty() || handsLeft <= 0) {
+            return;
+        }
+
+        HandResult bestHand = HandEvaluator.evaluateSelectedCards(selectedCards);
+        if (bestHand != null) {
+            int baseChips = 0;
+            for (Card c : bestHand.cardsUsed()) {
+                baseChips += c.points();
+            }
+            int pointsEarned = baseChips * bestHand.mult();
+            currentScore += pointsEarned;
+            
+            if (scoreLabel != null) {
+                scoreLabel.setText(String.valueOf(currentScore));
+            }
+
+            // Replace played cards with new cards from remaining deck
+            for (Card playedCard : selectedCards) {
+                int index = currentHand.indexOf(playedCard);
+                if (index != -1 && !remainingDeck.isEmpty()) {
+                    currentHand.set(index, remainingDeck.remove(0));
+                } else if (index != -1) {
+                    currentHand.remove(index);
+                }
+            }
+
+            selectedCards.clear();
+            handsLeft--;
+            
+            if (handsLabel != null) {
+                handsLabel.setText(String.valueOf(handsLeft));
+            }
+
+            renderCards(currentHand);
+            updateHandInfoDisplay();
+            
+            if (currentScore >= targetScore) {
+                if (gameOverPopup != null) {
+                    gameOverPopup.setVisible(true);
+                }
+                if (finalScoreLabel != null) {
+                    finalScoreLabel.setText("Total Score Achieved: " + currentScore);
+                }
+            }
+        } else {
+            System.out.println("No valid hand found for selection!");
+        }
+    }
+
+    @FXML
+    private void handleDiscard(ActionEvent event) {
+        if (selectedCards.isEmpty() || discardsLeft <= 0) {
+            return;
+        }
+
+        System.out.println("Discard clicked! Selected cards: " + selectedCards.size());
+
+        // Put them back to the remaining deck
+        remainingDeck.addAll(selectedCards);
+        Collections.shuffle(remainingDeck); // Shuffle so it's a random deck again
+
+        // Replace each selected card in its original position
+        for (Card discardedCard : selectedCards) {
+            int index = currentHand.indexOf(discardedCard);
+            if (index != -1 && !remainingDeck.isEmpty()) {
+                currentHand.set(index, remainingDeck.remove(0));
+            } else if (index != -1) {
+                currentHand.remove(index);
+            }
+        }
+
+        // Clear selection
+        selectedCards.clear();
+
+        // Update discards counter
+        discardsLeft--;
+        if (discardsLabel != null) {
+            discardsLabel.setText(String.valueOf(discardsLeft));
+        }
+
+        if (discardsLeft <= 0 && discardButton != null) {
+            discardButton.setDisable(true);
+        }
+
+        // Update UI
+        renderCards(currentHand);
+        updateHandInfoDisplay();
+    }
+
+    private void updateHandInfoDisplay() {
+        if (selectedCards.isEmpty()) {
+            handInfoBox.setVisible(false);
+            return;
+        }
+
+        HandResult bestHand = HandEvaluator.evaluateSelectedCards(selectedCards);
+        if (bestHand != null) {
+            handInfoBox.setVisible(true);
+            handNameLabel.setText(bestHand.handName() + " lvl.1");
+            
+            int baseChips = 0;
+            for (Card c : bestHand.cardsUsed()) {
+                baseChips += c.points();
+            }
+            
+            baseChipsLabel.setText(String.valueOf(baseChips));
+            multiplierLabel.setText(String.valueOf(bestHand.mult()));
+        } else {
+            handInfoBox.setVisible(false);
         }
     }
 }
