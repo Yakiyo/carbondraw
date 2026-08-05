@@ -32,8 +32,10 @@ public class HomeController {
 
     @FXML
     private void handlePlay(ActionEvent event) {
-        if (statusLabel != null) {
-            statusLabel.setText("♥ Starting new run... Ante 1: Small Blind ($300) ♦");
+        try {
+            App.setRoot("difficulty");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
         }
     }
 

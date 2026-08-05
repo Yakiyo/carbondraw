@@ -12,15 +12,22 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
 
+    private static Scene scene;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("home.fxml"));
         Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root, 800, 600);
+        scene = new Scene(root, 1440, 810);
 
         stage.setTitle("Carbon Draw - The Roguelike Deckbuilder");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void setRoot(String fxml) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+        scene.setRoot(fxmlLoader.load());
     }
 
     public static void main(String[] args) {
