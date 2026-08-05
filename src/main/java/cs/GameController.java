@@ -14,6 +14,23 @@ public class GameController {
     private Label gameInfoLabel;
 
     @FXML
+    private javafx.scene.layout.AnchorPane handsPopup;
+
+    @FXML
+    private void handleShowHands(ActionEvent event) {
+        if (handsPopup != null) {
+            handsPopup.setVisible(true);
+        }
+    }
+
+    @FXML
+    private void handleCloseHands(ActionEvent event) {
+        if (handsPopup != null) {
+            handsPopup.setVisible(false);
+        }
+    }
+
+    @FXML
     public void initialize() {
         GameSession session = GameSession.getInstance();
         if (session.getDifficulty() != null) {

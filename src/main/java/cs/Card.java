@@ -16,4 +16,18 @@ public record Card(
     public java.io.InputStream getImageStream() {
         return getClass().getResourceAsStream(imagePath);
     }
+
+    // Standard getters required for hand evaluation
+    public String getName() {
+        return name;
+    }
+
+    public String getSuit() {
+        return category;
+    }
+
+    public int getTier() {
+        // Since we don't have an explicit tier field yet, derive it from points
+        return points / 5; 
+    }
 }

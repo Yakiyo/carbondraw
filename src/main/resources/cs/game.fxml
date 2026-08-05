@@ -14,9 +14,44 @@
             <Label fx:id="gameInfoLabel" styleClass="status-label" text="Difficulty: Normal  |  Target: 2,500 Pts" />
         </VBox>
 
+        <!-- View Hands Button at Bottom Left -->
+        <Button onAction="#handleShowHands" styleClass="menu-button, btn-settings" text="VIEW HANDS" 
+                AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" 
+                style="-fx-pref-width: 200px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
+
         <!-- Return Home Button at Bottom Right -->
         <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="RETURN TO HOME" 
                 AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="30.0" 
                 style="-fx-pref-width: 200px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
+
+        <!-- Hands Popup Overlay (Hidden by default) -->
+        <AnchorPane fx:id="handsPopup" visible="false" styleClass="popup-overlay" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <VBox alignment="CENTER" spacing="15.0" styleClass="popup-content" AnchorPane.topAnchor="50.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0">
+                    <children>
+                        <AnchorPane prefWidth="1000.0">
+                            <Label styleClass="game-subtitle" text="VALID HAND COMBINATIONS" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="5.0"/>
+                            <Button onAction="#handleCloseHands" text="X" styleClass="btn-close-popup" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" prefWidth="40.0" prefHeight="40.0"/>
+                        </AnchorPane>
+                        
+                        <!-- List of hands -->
+                        <VBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-padding: 20px;">
+                            <Label text="• The Smart Grid (x50 Mult): 1 Smart Grid AI + 4 Renewable Energy" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Rewilding (x40 Mult): 5 unique Biosphere cards" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Net Zero Earthshot (x20 Mult): 5 cards same suit, ascending tier" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Industry Overhaul (x15 Mult): 4 cards of the same suit" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Symbiotic Loop (x12 Mult): 3 cards of one suit + 2 of another suit" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Monoculture (x10 Mult): 5 cards of the exact same suit" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Holistic Strategy (x8 Mult): 5 cards in ascending sequential tier" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Sector Focus (x5 Mult): 3 cards of the same suit" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Bilateral Agreement (x4 Mult): 2 cards of one suit + 2 of another suit" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Grassroots Action (x2 Mult): 2 cards of the same suit" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• High Card (x1 Mult): Highest single card value" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+                            <Label text="• Bureaucratic Gridlock (x0 PENALTY): 5 Policy cards of same tier" style="-fx-text-fill: #ff6b6b; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
     </children>
 </AnchorPane>
