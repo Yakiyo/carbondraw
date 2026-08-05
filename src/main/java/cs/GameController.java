@@ -249,8 +249,17 @@ public class GameController {
                 if (gameOverPopup != null) {
                     gameOverPopup.setVisible(true);
                 }
-                if (finalScoreLabel != null) {
-                    finalScoreLabel.setText("Total Score Achieved: " + currentScore);
+                
+                int excess = currentScore - targetScore;
+                if (excess > 0) {
+                    PlayerDatabase.addCurrency(excess);
+                    if (finalScoreLabel != null) {
+                        finalScoreLabel.setText("Total Score Achieved: " + currentScore + "\nCoins Earned: " + excess);
+                    }
+                } else {
+                    if (finalScoreLabel != null) {
+                        finalScoreLabel.setText("Total Score Achieved: " + currentScore);
+                    }
                 }
             }
         } else {

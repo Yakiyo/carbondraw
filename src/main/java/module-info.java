@@ -6,8 +6,9 @@ module cs.cdraw {
     
     // 2. Database requirements
     requires java.sql;
+    requires com.google.gson;
 
     // 3. Give JavaFX permission to read and interact with your 'cs' package
-    opens cs to javafx.fxml;
+    opens cs to javafx.fxml, com.google.gson;
     exports cs;
 }

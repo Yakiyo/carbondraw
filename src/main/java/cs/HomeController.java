@@ -15,6 +15,9 @@ public class HomeController {
     private Label statusLabel;
 
     @FXML
+    private Label currencyLabel;
+
+    @FXML
     private Button playButton;
 
     @FXML
@@ -27,6 +30,9 @@ public class HomeController {
     public void initialize() {
         if (statusLabel != null) {
             statusLabel.setText("♠ Ready to deal... Select an option ♥");
+        }
+        if (currencyLabel != null) {
+            currencyLabel.setText(String.valueOf(PlayerDatabase.getCurrency()));
         }
     }
 
