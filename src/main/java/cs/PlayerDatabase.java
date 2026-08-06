@@ -23,6 +23,10 @@ public class PlayerDatabase {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            PlayerData defaultData = new PlayerData();
+            saveData(defaultData);
+            return defaultData;
         }
         return new PlayerData();
     }
