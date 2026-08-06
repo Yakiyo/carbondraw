@@ -13,10 +13,10 @@
   <url>http://www.example.com</url>
 
   <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <!-- Use the latest JavaFX version available, usually matches or trails the JDK -->
-        <javafx.version>25.0.4</javafx.version> 
+        <javafx.version>21.0.2</javafx.version> 
     </properties>
 
   <dependencies>
