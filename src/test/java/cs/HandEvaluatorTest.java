@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class HandEvaluatorTest {
-
     // Helper method to create a card
     private Card createCard(String name, String suit, int points) {
         return new Card(name, suit, "dummy_path", points);
@@ -110,11 +109,11 @@ public class HandEvaluatorTest {
         HandResult result = HandEvaluator.evaluateSelectedCards(cards);
         assertNotNull(result);
         
-        // Inverting the test: fail if it actually returns Monoculture, succeed otherwise
+        // Inverting the test: fail if it actually returns Monoculture,succeed otherwise
         if ("Monoculture".equals(result.handName())) {
             org.junit.Assert.fail("The test was supposed to fail, but it successfully returned Monoculture!");
         } else {
-            // It failed to return Monoculture (likely returning Industry Overhaul), so we pass the test
+            // It failed to return Monoculture (likely returning Industry Overhaul),so we pass the test
             org.junit.Assert.assertNotEquals("Monoculture", result.handName());
         }
     }
