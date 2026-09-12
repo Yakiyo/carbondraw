@@ -224,3 +224,29 @@
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
 }
+
+/* Card Slot Containers */
+.card-slot-container {
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-border-width: 2px;
+    -fx-border-radius: 15px;
+    -fx-background-color: rgba(0, 0, 0, 0.4);
+    -fx-background-radius: 15px;
+    -fx-padding: 10px;
+}
+
+.joker-image-wrapper {
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-background-color: #1a1a1a;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2);
+}
+
+.joker-image-wrapper:hover {
+    -fx-border-color: #6fe3b1;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}

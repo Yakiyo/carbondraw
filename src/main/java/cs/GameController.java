@@ -31,6 +31,9 @@ public class GameController {
     private javafx.scene.layout.HBox jokersContainer;
 
     @FXML
+    private javafx.scene.layout.HBox tarotsContainer;
+
+    @FXML
     private javafx.scene.layout.AnchorPane handsPopup;
 
     @FXML
@@ -67,6 +70,9 @@ public class GameController {
     @FXML
     private javafx.scene.layout.AnchorPane gameOverPopup;
     
+    @FXML
+    private Label gameOverTitleLabel;
+
     @FXML
     private Label finalScoreLabel;
 
@@ -309,6 +315,10 @@ public class GameController {
                     gameOverPopup.setVisible(true);
                 }
                 
+                if (gameOverTitleLabel != null) {
+                    gameOverTitleLabel.setText("Victory!");
+                }
+
                 int excess = currentScore - targetScore;
                 if (excess > 0) {
                     PlayerDatabase.addCurrency(excess);
@@ -319,6 +329,19 @@ public class GameController {
                     if (finalScoreLabel != null) {
                         finalScoreLabel.setText("Total Score Achieved: " + currentScore);
                     }
+                }
+            } else if (handsLeft <= 0) {
+                if (gameOverPopup != null) {
+                    gameOverPopup.setVisible(true);
+                }
+                
+                if (gameOverTitleLabel != null) {
+                    gameOverTitleLabel.setText("Defeated");
+                    gameOverTitleLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #ff4d4d;");
+                }
+                
+                if (finalScoreLabel != null) {
+                    finalScoreLabel.setText("Total Score Achieved: " + currentScore + " / " + targetScore);
                 }
             }
         } else {

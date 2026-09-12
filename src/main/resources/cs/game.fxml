@@ -64,9 +64,15 @@
             
             <!-- RIGHT GAME BOARD -->
             <BorderPane HBox.hgrow="ALWAYS" style="-fx-padding: 30px;">
-                <!-- Top: Jokers -->
+                <!-- Top: Jokers and Consumables -->
                 <top>
-                    <HBox fx:id="jokersContainer" alignment="CENTER" spacing="15.0" prefHeight="150.0" BorderPane.alignment="CENTER" />
+                    <HBox alignment="CENTER_LEFT" spacing="30.0" prefHeight="170.0" BorderPane.alignment="CENTER">
+                        <!-- Jokers Area -->
+                        <HBox fx:id="jokersContainer" alignment="CENTER_LEFT" spacing="15.0" prefWidth="380.0" maxWidth="380.0" minWidth="380.0" styleClass="card-slot-container" />
+                        
+                        <!-- Tarot Cards Area (Placeholder) -->
+                        <HBox fx:id="tarotsContainer" alignment="CENTER_LEFT" spacing="15.0" styleClass="card-slot-container" HBox.hgrow="ALWAYS" />
+                    </HBox>
                 </top>
                 
                 <!-- Bottom: Player Hand and Action Buttons -->
@@ -119,7 +125,7 @@
         <AnchorPane fx:id="gameOverPopup" visible="false" styleClass="popup-overlay" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <children>
                 <VBox alignment="CENTER" spacing="20.0" styleClass="popup-content" AnchorPane.topAnchor="200.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="400.0" AnchorPane.rightAnchor="400.0">
-                    <Label text="Finished!" styleClass="game-title" style="-fx-font-size: 48px;"/>
+                    <Label fx:id="gameOverTitleLabel" text="Finished!" styleClass="game-title" style="-fx-font-size: 48px;"/>
                     <Label fx:id="finalScoreLabel" text="Total Score Achieved: 0" styleClass="game-subtitle" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
                     <Button onAction="#handleReturnHome" styleClass="menu-button" text="Return to Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #2a9df4; -fx-text-fill: white;" />
                 </VBox>
