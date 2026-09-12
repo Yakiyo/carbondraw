@@ -28,6 +28,9 @@ public class GameController {
     private Label gameInfoLabel;
 
     @FXML
+    private javafx.scene.layout.HBox jokersContainer;
+
+    @FXML
     private javafx.scene.layout.AnchorPane handsPopup;
 
     @FXML
@@ -112,7 +115,46 @@ public class GameController {
         if (handsLabel != null) handsLabel.setText(String.valueOf(handsLeft));
         if (gameOverPopup != null) gameOverPopup.setVisible(false);
 
+        renderJokers(session.getActiveJokers());
         renderCards(currentHand);
+    }
+
+    private void renderJokers(List<Joker> jokers) {
+        if (jokersContainer == null) return;
+        jokersContainer.getChildren().clear();
+
+        for (Joker joker : jokers) {
+            StackPane imageWrapper = new StackPane();
+            imageWrapper.getStyleClass().add("joker-image-wrapper");
+
+            try {
+                Image img = new Image(getClass().getResourceAsStream(joker.imagePath()));
+                ImageView imgView = new ImageView(img);
+                imgView.setFitWidth(100);
+                imgView.setFitHeight(145);
+                imgView.setPreserveRatio(false);
+
+                Rectangle clip = new Rectangle(100, 145);
+                clip.setArcWidth(10);
+                clip.setArcHeight(10);
+                imgView.setClip(clip);
+
+                imageWrapper.getChildren().add(imgView);
+            } catch (Exception e) {
+                System.err.println("Could not load joker image: " + joker.imagePath());
+                Label errorLabel = new Label(joker.name());
+                errorLabel.setStyle("-fx-text-fill: white; -fx-padding: 10px;");
+                imageWrapper.getChildren().add(errorLabel);
+                imageWrapper.setPrefSize(100, 145);
+            }
+
+            Tooltip tooltip = new Tooltip(joker.name() + "\n" + joker.description());
+            tooltip.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+            tooltip.setShowDelay(Duration.millis(100));
+            Tooltip.install(imageWrapper, tooltip);
+
+            jokersContainer.getChildren().add(imageWrapper);
+        }
     }
 
     private void renderCards(List<Card> cards) {
@@ -206,6 +248,22 @@ public class GameController {
         }
     }
 
+    private int[] calculateScoreWithJokers(int baseChips, int baseMult) {
+        int finalChips = baseChips;
+        int finalMult = baseMult;
+
+        for (Joker joker : GameSession.getInstance().getActiveJokers()) {
+            if (joker.effectType() == Joker.JokerEffect.ADD_CHIPS) {
+                finalChips += joker.effectValue();
+            } else if (joker.effectType() == Joker.JokerEffect.ADD_MULTI) {
+                finalMult += joker.effectValue();
+            } else if (joker.effectType() == Joker.JokerEffect.MULT_MULTI) {
+                finalMult *= joker.effectValue();
+            }
+        }
+        return new int[]{finalChips, finalMult};
+    }
+
     @FXML
     private void handlePlayHand(ActionEvent event) {
         if (selectedCards.isEmpty() || handsLeft <= 0) {
@@ -218,7 +276,8 @@ public class GameController {
             for (Card c : bestHand.cardsUsed()) {
                 baseChips += c.points();
             }
-            int pointsEarned = baseChips * bestHand.mult();
+            int[] calculated = calculateScoreWithJokers(baseChips, bestHand.mult());
+            int pointsEarned = calculated[0] * calculated[1];
             currentScore += pointsEarned;
             
             if (scoreLabel != null) {
@@ -323,8 +382,10 @@ public class GameController {
                 baseChips += c.points();
             }
             
-            baseChipsLabel.setText(String.valueOf(baseChips));
-            multiplierLabel.setText(String.valueOf(bestHand.mult()));
+            int[] calculated = calculateScoreWithJokers(baseChips, bestHand.mult());
+            
+            baseChipsLabel.setText(String.valueOf(calculated[0]));
+            multiplierLabel.setText(String.valueOf(calculated[1]));
         } else {
             handInfoBox.setVisible(false);
         }
