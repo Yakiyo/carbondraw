@@ -76,6 +76,11 @@ public class GameController {
     @FXML
     private Label finalScoreLabel;
 
+    @FXML
+    private javafx.scene.control.Button endGameButton;
+
+    private boolean won = false;
+
     private int currentScore = 0;
     private int handsLeft = 4;
     private int targetScore = 0;
@@ -254,6 +259,19 @@ public class GameController {
         }
     }
 
+    @FXML
+    private void handleEndGameAction(ActionEvent event) {
+        if (won) {
+            try {
+                App.setRoot("shop");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            handleReturnHome(event);
+        }
+    }
+
     private int[] calculateScoreWithJokers(int baseChips, int baseMult) {
         int finalChips = baseChips;
         int finalMult = baseMult;
@@ -311,12 +329,17 @@ public class GameController {
             updateHandInfoDisplay();
             
             if (currentScore >= targetScore) {
+                won = true;
                 if (gameOverPopup != null) {
                     gameOverPopup.setVisible(true);
                 }
                 
                 if (gameOverTitleLabel != null) {
                     gameOverTitleLabel.setText("Victory!");
+                }
+                
+                if (endGameButton != null) {
+                    endGameButton.setText("Go to Shop");
                 }
 
                 int excess = currentScore - targetScore;
@@ -331,6 +354,7 @@ public class GameController {
                     }
                 }
             } else if (handsLeft <= 0) {
+                won = false;
                 if (gameOverPopup != null) {
                     gameOverPopup.setVisible(true);
                 }
@@ -338,6 +362,10 @@ public class GameController {
                 if (gameOverTitleLabel != null) {
                     gameOverTitleLabel.setText("Defeated");
                     gameOverTitleLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #ff4d4d;");
+                }
+                
+                if (endGameButton != null) {
+                    endGameButton.setText("Return to Menu");
                 }
                 
                 if (finalScoreLabel != null) {

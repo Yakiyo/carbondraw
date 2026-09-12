@@ -21,6 +21,9 @@ public class HomeController {
     private Button playButton;
 
     @FXML
+    private Button shopButton;
+
+    @FXML
     private Button settingsButton;
 
     @FXML
@@ -40,6 +43,15 @@ public class HomeController {
     private void handlePlay(ActionEvent event) {
         try {
             App.setRoot("difficulty");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleShop(ActionEvent event) {
+        try {
+            App.setRoot("shop");
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }

@@ -45,6 +45,12 @@ public class PlayerDatabase {
         saveData(data);
     }
 
+    public static void deductCurrency(int amount) {
+        PlayerData data = loadData();
+        data.setCurrency(Math.max(0, data.getCurrency() - amount));
+        saveData(data);
+    }
+
     public static int getCurrency() {
         return loadData().getCurrency();
     }

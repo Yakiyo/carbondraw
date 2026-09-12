@@ -25,6 +25,7 @@
                 <VBox alignment="CENTER" spacing="18.0" styleClass="button-box">
                     <children>
                         <Button fx:id="playButton" onAction="#handlePlay" styleClass="menu-button, btn-play" text="PLAY" />
+                        <Button fx:id="shopButton" onAction="#handleShop" styleClass="menu-button" style="-fx-background-color: linear-gradient(to bottom, #fca311 0%, #d48300 100%);" text="SHOP" />
                         <Button fx:id="settingsButton" onAction="#handleSettings" styleClass="menu-button, btn-settings" text="SETTINGS" />
                         <Button fx:id="exitButton" onAction="#handleExit" styleClass="menu-button, btn-exit" text="EXIT" />
                     </children>
