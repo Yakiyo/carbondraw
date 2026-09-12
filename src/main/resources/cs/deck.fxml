@@ -7,17 +7,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 
-<AnchorPane styleClass="root-pane" stylesheets="@home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs.ShopController" prefWidth="1920.0" prefHeight="1000.0">
+<AnchorPane styleClass="root-pane" stylesheets="@home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs.DeckController" prefWidth="1920.0" prefHeight="1000.0">
     <children>
         <BorderPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <!-- LEFT NAVIGATION BAR -->
             <left>
                 <VBox styleClass="left-panel" prefWidth="350.0" minWidth="350.0" spacing="20.0" alignment="TOP_CENTER">
                     <VBox alignment="CENTER" spacing="10.0" styleClass="panel-section">
-                        <Label styleClass="game-title" style="-fx-font-size: 40px;" text="THE SHOP" />
-                        <Label fx:id="currencyLabel" styleClass="status-label" style="-fx-font-size: 16px;" text="Coins: 0" />
+                        <Label styleClass="game-title" style="-fx-font-size: 36px;" text="MANAGE DECK" />
+                        <Label fx:id="runStatusLabel" styleClass="status-label" style="-fx-font-size: 14px;" text="No active run" />
                     </VBox>
 
                     <VBox alignment="CENTER" spacing="15.0" styleClass="panel-section" VBox.vgrow="ALWAYS">
@@ -28,7 +27,7 @@
                     <Region VBox.vgrow="ALWAYS" />
 
                     <VBox spacing="15.0" alignment="CENTER" styleClass="panel-section">
-                        <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="Main Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
+                        <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="Back to Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                     </VBox>
                 </VBox>
             </left>
@@ -36,13 +35,11 @@
             <!-- RIGHT CONTENT AREA -->
             <center>
                 <VBox alignment="CENTER" spacing="30.0" BorderPane.alignment="CENTER" style="-fx-padding: 50px;">
-                    <Label fx:id="shopSectionTitle" text="Welcome to the Shop!" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <Label fx:id="deckSectionTitle" text="Your Loadout" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
                     
-                    <HBox fx:id="shopItemsContainer" alignment="CENTER" spacing="40.0" styleClass="card-slot-container" style="-fx-padding: 50px; -fx-min-height: 400px; -fx-min-width: 800px;">
-                        <!-- Shop items dynamically injected here -->
+                    <HBox fx:id="deckItemsContainer" alignment="CENTER" spacing="40.0" styleClass="card-slot-container" style="-fx-padding: 50px; -fx-min-height: 400px; -fx-min-width: 800px;">
+                        <!-- Deck items dynamically injected here -->
                     </HBox>
-
-                    <Button fx:id="buyButton" visible="false" onAction="#handleBuyItem" styleClass="menu-button" style="-fx-background-color: #fca311; -fx-text-fill: white; -fx-pref-width: 400px; -fx-font-size: 24px;" text="Buy" />
                 </VBox>
             </center>
         </BorderPane>

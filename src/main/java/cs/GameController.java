@@ -263,10 +263,22 @@ public class GameController {
     @FXML
     private void handleEndGameAction(ActionEvent event) {
         if (won) {
-            try {
-                App.setRoot("shop");
-            } catch (IOException e) {
-                e.printStackTrace();
+            GameSession session = GameSession.getInstance();
+            boolean hasMore = session.advanceAnte();
+            if (hasMore) {
+                try {
+                    App.setRoot("shop");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // All 10 antes beaten — run complete!
+                session.endSession();
+                try {
+                    App.setRoot("home");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             handleReturnHome(event);

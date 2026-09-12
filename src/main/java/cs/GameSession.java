@@ -16,6 +16,7 @@ public class GameSession {
     private int baseTargetScore;
     private int targetPoints;
     private int currentScore;
+    private List<Joker> ownedJokers = new ArrayList<>();
     private List<Joker> activeJokers = new ArrayList<>();
 
     private GameSession() {}
@@ -36,10 +37,9 @@ public class GameSession {
         this.targetPoints = baseTargetScore;
         this.currentScore = 0;
         
-        // Jokers will be bought from the shop
+        this.ownedJokers.clear();
         this.activeJokers.clear();
         
-        // Persist to database
         saveRunToDatabase();
     }
 
@@ -58,36 +58,50 @@ public class GameSession {
         this.targetPoints = runData.getTargetPoints();
         this.currentScore = 0;
 
-        // Restore jokers
-        this.activeJokers.clear();
+        // Restore owned jokers
+        this.ownedJokers.clear();
         if (runData.getOwnedJokers() != null) {
             for (PlayerData.JokerData jd : runData.getOwnedJokers()) {
-                this.activeJokers.add(new Joker(
-                    jd.getName(),
-                    jd.getDescription(),
-                    jd.getImagePath(),
-                    Joker.JokerEffect.valueOf(jd.getEffectType()),
-                    jd.getEffectValue()
-                ));
+                this.ownedJokers.add(jokerFromData(jd));
+            }
+        }
+
+        // Restore active jokers
+        this.activeJokers.clear();
+        if (runData.getActiveJokers() != null) {
+            for (PlayerData.JokerData jd : runData.getActiveJokers()) {
+                this.activeJokers.add(jokerFromData(jd));
             }
         }
         return true;
+    }
+
+    private Joker jokerFromData(PlayerData.JokerData jd) {
+        return new Joker(
+            jd.getName(), jd.getDescription(), jd.getImagePath(),
+            Joker.JokerEffect.valueOf(jd.getEffectType()), jd.getEffectValue()
+        );
+    }
+
+    private PlayerData.JokerData dataFromJoker(Joker j) {
+        return new PlayerData.JokerData(
+            j.name(), j.description(), j.imagePath(),
+            j.effectType().name(), j.effectValue()
+        );
     }
 
     /**
      * Save current run state to the database.
      */
     public void saveRunToDatabase() {
-        List<PlayerData.JokerData> jokerDataList = activeJokers.stream()
-            .map(j -> new PlayerData.JokerData(
-                j.name(), j.description(), j.imagePath(),
-                j.effectType().name(), j.effectValue()
-            ))
-            .collect(Collectors.toList());
+        List<PlayerData.JokerData> ownedData = ownedJokers.stream()
+            .map(this::dataFromJoker).collect(Collectors.toList());
+        List<PlayerData.JokerData> activeData = activeJokers.stream()
+            .map(this::dataFromJoker).collect(Collectors.toList());
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, jokerDataList
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData
         );
         PlayerDatabase.saveRun(runData);
     }
@@ -97,14 +111,12 @@ public class GameSession {
      */
     public boolean advanceAnte() {
         if (currentAnte >= maxAntes) {
-            return false; // Run complete!
+            return false;
         }
         currentAnte++;
-        // Target score = base * multiplier^(ante-1)
         targetPoints = (int) Math.round(baseTargetScore * Math.pow(difficultyMultiplier, currentAnte - 1));
         currentScore = 0;
         
-        // Persist updated state
         saveRunToDatabase();
         return true;
     }
@@ -114,9 +126,9 @@ public class GameSession {
         this.targetPoints = 0;
         this.currentScore = 0;
         this.currentAnte = 0;
+        this.ownedJokers.clear();
         this.activeJokers.clear();
         
-        // Clear saved run from database
         PlayerDatabase.clearRun();
     }
 
@@ -127,5 +139,6 @@ public class GameSession {
     public int getTargetPoints() { return targetPoints; }
     public int getCurrentScore() { return currentScore; }
     public void setScore(int score) { this.currentScore = score; }
+    public List<Joker> getOwnedJokers() { return ownedJokers; }
     public List<Joker> getActiveJokers() { return activeJokers; }
 }

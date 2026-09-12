@@ -131,26 +131,6 @@ public class ShopController {
     }
 
     @FXML
-    private void handleNextRound(ActionEvent event) {
-        GameSession session = GameSession.getInstance();
-        boolean hasMore = session.advanceAnte();
-        if (hasMore) {
-            try {
-                App.setRoot("game");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            // Run complete! All 10 antes beaten
-            try {
-                App.setRoot("home");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @FXML
     private void handleBuyItem(ActionEvent event) {
         if (selectedJoker != null) {
             int currentCoins = PlayerDatabase.getCurrency();
@@ -161,15 +141,17 @@ public class ShopController {
                     currencyLabel.setText("Coins: " + PlayerDatabase.getCurrency());
                 }
 
-                // Add joker to active loadout
-                GameSession.getInstance().getActiveJokers().add(selectedJoker);
+                // Add joker to owned AND active by default
+                GameSession session = GameSession.getInstance();
+                session.getOwnedJokers().add(selectedJoker);
+                session.getActiveJokers().add(selectedJoker);
 
                 // Remove from shop
                 availableJokers.remove(selectedJoker);
                 selectedJoker = null;
 
                 // Save updated run state
-                GameSession.getInstance().saveRunToDatabase();
+                session.saveRunToDatabase();
                 
                 // Hide buy button and refresh
                 if (buyButton != null) {
@@ -186,7 +168,7 @@ public class ShopController {
 
     @FXML
     private void handleReturnHome(ActionEvent event) {
-        GameSession.getInstance().endSession();
+        // Don't end the session — the run persists in the database
         try {
             App.setRoot("home");
         } catch (IOException e) {

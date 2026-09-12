@@ -29,13 +29,16 @@ public class PlayerData {
         private int baseTargetScore;
         private int targetPoints;
         private List<JokerData> ownedJokers;
+        private List<JokerData> activeJokers;
 
         public RunData() {
             this.ownedJokers = new ArrayList<>();
+            this.activeJokers = new ArrayList<>();
         }
 
         public RunData(String difficulty, double difficultyMultiplier, int currentAnte,
-                       int maxAntes, int baseTargetScore, int targetPoints, List<JokerData> ownedJokers) {
+                       int maxAntes, int baseTargetScore, int targetPoints,
+                       List<JokerData> ownedJokers, List<JokerData> activeJokers) {
             this.difficulty = difficulty;
             this.difficultyMultiplier = difficultyMultiplier;
             this.currentAnte = currentAnte;
@@ -43,6 +46,7 @@ public class PlayerData {
             this.baseTargetScore = baseTargetScore;
             this.targetPoints = targetPoints;
             this.ownedJokers = ownedJokers != null ? ownedJokers : new ArrayList<>();
+            this.activeJokers = activeJokers != null ? activeJokers : new ArrayList<>();
         }
 
         public String getDifficulty() { return difficulty; }
@@ -52,6 +56,7 @@ public class PlayerData {
         public int getBaseTargetScore() { return baseTargetScore; }
         public int getTargetPoints() { return targetPoints; }
         public List<JokerData> getOwnedJokers() { return ownedJokers; }
+        public List<JokerData> getActiveJokers() { return activeJokers; }
     }
 
     /**

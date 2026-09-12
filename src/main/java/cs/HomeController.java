@@ -24,7 +24,7 @@ public class HomeController {
     private Button shopButton;
 
     @FXML
-    private Button settingsButton;
+    private Button deckButton;
 
     @FXML
     private Button exitButton;
@@ -58,9 +58,11 @@ public class HomeController {
     }
 
     @FXML
-    private void handleSettings(ActionEvent event) {
-        if (statusLabel != null) {
-            statusLabel.setText("♣ Settings: Game Speed (4x) • CRT Scanlines • Audio ♠");
+    private void handleDeck(ActionEvent event) {
+        try {
+            App.setRoot("deck");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
         }
     }
 
