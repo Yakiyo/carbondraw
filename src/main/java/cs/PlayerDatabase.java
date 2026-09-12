@@ -54,4 +54,24 @@ public class PlayerDatabase {
     public static int getCurrency() {
         return loadData().getCurrency();
     }
+
+    public static void saveRun(PlayerData.RunData runData) {
+        PlayerData data = loadData();
+        data.setActiveRun(runData);
+        saveData(data);
+    }
+
+    public static PlayerData.RunData loadRun() {
+        return loadData().getActiveRun();
+    }
+
+    public static void clearRun() {
+        PlayerData data = loadData();
+        data.setActiveRun(null);
+        saveData(data);
+    }
+
+    public static boolean hasActiveRun() {
+        return loadData().getActiveRun() != null;
+    }
 }

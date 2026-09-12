@@ -132,11 +132,21 @@ public class ShopController {
 
     @FXML
     private void handleNextRound(ActionEvent event) {
-        // For now, next round just goes to difficulty selection
-        try {
-            App.setRoot("difficulty");
-        } catch (IOException e) {
-            e.printStackTrace();
+        GameSession session = GameSession.getInstance();
+        boolean hasMore = session.advanceAnte();
+        if (hasMore) {
+            try {
+                App.setRoot("game");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Run complete! All 10 antes beaten
+            try {
+                App.setRoot("home");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -157,6 +167,9 @@ public class ShopController {
                 // Remove from shop
                 availableJokers.remove(selectedJoker);
                 selectedJoker = null;
+
+                // Save updated run state
+                GameSession.getInstance().saveRunToDatabase();
                 
                 // Hide buy button and refresh
                 if (buyButton != null) {

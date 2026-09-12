@@ -104,7 +104,8 @@ public class GameController {
         GameSession session = GameSession.getInstance();
         if (session.getDifficulty() != null) {
             targetScore = session.getTargetPoints();
-            gameInfoLabel.setText(String.format("Difficulty: %s  |  Target: %,d Pts", 
+            gameInfoLabel.setText(String.format("Ante %d/%d  |  %s  |  Target: %,d Pts", 
+                session.getCurrentAnte(), session.getMaxAntes(),
                 session.getDifficulty(), targetScore));
         }
 
