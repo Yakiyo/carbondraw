@@ -79,6 +79,9 @@ public class GameController {
     @FXML
     private javafx.scene.control.Button endGameButton;
 
+    @FXML
+    private javafx.scene.layout.HBox winButtonsBox;
+
     private boolean won = false;
 
     private int currentScore = 0;
@@ -261,27 +264,32 @@ public class GameController {
     }
 
     @FXML
-    private void handleEndGameAction(ActionEvent event) {
-        if (won) {
-            GameSession session = GameSession.getInstance();
-            boolean hasMore = session.advanceAnte();
-            if (hasMore) {
-                try {
-                    App.setRoot("shop");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                // All 10 antes beaten — run complete!
-                session.endSession();
-                try {
-                    App.setRoot("home");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    private void handleGoToShop(ActionEvent event) {
+        try {
+            App.setRoot("shop");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleNextRoundAction(ActionEvent event) {
+        GameSession session = GameSession.getInstance();
+        boolean hasMore = session.advanceAnte();
+        if (hasMore) {
+            try {
+                App.setRoot("game");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
-            handleReturnHome(event);
+            // All 10 antes beaten — run complete!
+            session.endSession();
+            try {
+                App.setRoot("home");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -351,8 +359,13 @@ public class GameController {
                     gameOverTitleLabel.setText("Victory!");
                 }
                 
+                if (winButtonsBox != null) {
+                    winButtonsBox.setVisible(true);
+                    winButtonsBox.setManaged(true);
+                }
                 if (endGameButton != null) {
-                    endGameButton.setText("Go to Shop");
+                    endGameButton.setVisible(false);
+                    endGameButton.setManaged(false);
                 }
 
                 int excess = currentScore - targetScore;
@@ -374,11 +387,15 @@ public class GameController {
                 
                 if (gameOverTitleLabel != null) {
                     gameOverTitleLabel.setText("Defeated");
-                    gameOverTitleLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #ff4d4d;");
                 }
                 
+                if (winButtonsBox != null) {
+                    winButtonsBox.setVisible(false);
+                    winButtonsBox.setManaged(false);
+                }
                 if (endGameButton != null) {
-                    endGameButton.setText("Return to Menu");
+                    endGameButton.setVisible(true);
+                    endGameButton.setManaged(true);
                 }
                 
                 if (finalScoreLabel != null) {

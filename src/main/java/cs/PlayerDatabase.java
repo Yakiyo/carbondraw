@@ -72,6 +72,7 @@ public class PlayerDatabase {
     }
 
     public static boolean hasActiveRun() {
-        return loadData().getActiveRun() != null;
+        PlayerData.RunData run = loadData().getActiveRun();
+        return run != null && run.getDifficulty() != null;
     }
 }

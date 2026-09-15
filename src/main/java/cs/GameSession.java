@@ -40,7 +40,8 @@ public class GameSession {
         this.ownedJokers.clear();
         this.activeJokers.clear();
         
-        saveRunToDatabase();
+        // Clear any previous run from DB; we don't save the new run until first win
+        PlayerDatabase.clearRun();
     }
 
     /**
