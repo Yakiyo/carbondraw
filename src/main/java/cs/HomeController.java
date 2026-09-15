@@ -35,7 +35,7 @@ public class HomeController {
             statusLabel.setText("♠ Ready to deal... Select an option ♥");
         }
         if (currencyLabel != null) {
-            currencyLabel.setText(String.valueOf(PlayerDatabase.getCurrency()));
+            currencyLabel.setText("Coins: " + GameSession.getInstance().getCoins());
         }
     }
 

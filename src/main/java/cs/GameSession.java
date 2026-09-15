@@ -18,6 +18,8 @@ public class GameSession {
     private int currentScore;
     private List<Joker> ownedJokers = new ArrayList<>();
     private List<Joker> activeJokers = new ArrayList<>();
+    private List<Tarot> ownedTarots = new ArrayList<>();
+    private int coins;
 
     private GameSession() {}
 
@@ -39,9 +41,11 @@ public class GameSession {
         
         this.ownedJokers.clear();
         this.activeJokers.clear();
+        this.ownedTarots.clear();
+        this.coins = 0;
         
-        // Clear any previous run from DB; we don't save the new run until first win
-        PlayerDatabase.clearRun();
+        // Save the run immediately so it can be continued later
+        saveRunToDatabase();
     }
 
     /**
@@ -58,6 +62,7 @@ public class GameSession {
         this.baseTargetScore = runData.getBaseTargetScore();
         this.targetPoints = runData.getTargetPoints();
         this.currentScore = 0;
+        this.coins = runData.getCoins();
 
         // Restore owned jokers
         this.ownedJokers.clear();
@@ -74,6 +79,15 @@ public class GameSession {
                 this.activeJokers.add(jokerFromData(jd));
             }
         }
+
+        // Restore tarots
+        this.ownedTarots.clear();
+        if (runData.getOwnedTarots() != null) {
+            for (PlayerData.TarotData td : runData.getOwnedTarots()) {
+                this.ownedTarots.add(tarotFromData(td));
+            }
+        }
+
         return true;
     }
 
@@ -91,6 +105,20 @@ public class GameSession {
         );
     }
 
+    private Tarot tarotFromData(PlayerData.TarotData td) {
+        return new Tarot(
+            td.getName(), td.getDescription(), td.getImagePath(),
+            Tarot.TarotEffect.valueOf(td.getEffectType()), td.getTargetCount()
+        );
+    }
+
+    private PlayerData.TarotData dataFromTarot(Tarot t) {
+        return new PlayerData.TarotData(
+            t.name(), t.description(), t.imagePath(),
+            t.effectType().name(), t.targetCount()
+        );
+    }
+
     /**
      * Save current run state to the database.
      */
@@ -99,10 +127,12 @@ public class GameSession {
             .map(this::dataFromJoker).collect(Collectors.toList());
         List<PlayerData.JokerData> activeData = activeJokers.stream()
             .map(this::dataFromJoker).collect(Collectors.toList());
+        List<PlayerData.TarotData> tarotData = ownedTarots.stream()
+            .map(this::dataFromTarot).collect(Collectors.toList());
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, ownedData, activeData
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, coins
         );
         PlayerDatabase.saveRun(runData);
     }
@@ -129,8 +159,21 @@ public class GameSession {
         this.currentAnte = 0;
         this.ownedJokers.clear();
         this.activeJokers.clear();
+        this.ownedTarots.clear();
         
         PlayerDatabase.clearRun();
+    }
+
+    public void addCoins(int amount) {
+        this.coins += amount;
+    }
+
+    public void deductCoins(int amount) {
+        this.coins = Math.max(0, this.coins - amount);
+    }
+
+    public int getCoins() {
+        return coins;
     }
 
     public String getDifficulty() { return difficulty; }
@@ -142,4 +185,5 @@ public class GameSession {
     public void setScore(int score) { this.currentScore = score; }
     public List<Joker> getOwnedJokers() { return ownedJokers; }
     public List<Joker> getActiveJokers() { return activeJokers; }
+    public List<Tarot> getOwnedTarots() { return ownedTarots; }
 }

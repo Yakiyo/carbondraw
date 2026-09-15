@@ -82,8 +82,6 @@ public class GameController {
     @FXML
     private javafx.scene.layout.HBox winButtonsBox;
 
-    private boolean won = false;
-
     private int currentScore = 0;
     private int handsLeft = 4;
     private int targetScore = 0;
@@ -350,7 +348,6 @@ public class GameController {
             updateHandInfoDisplay();
             
             if (currentScore >= targetScore) {
-                won = true;
                 if (gameOverPopup != null) {
                     gameOverPopup.setVisible(true);
                 }
@@ -370,7 +367,7 @@ public class GameController {
 
                 int excess = currentScore - targetScore;
                 if (excess > 0) {
-                    PlayerDatabase.addCurrency(excess);
+                    GameSession.getInstance().addCoins(excess);
                     if (finalScoreLabel != null) {
                         finalScoreLabel.setText("Total Score Achieved: " + currentScore + "\nCoins Earned: " + excess);
                     }
@@ -380,7 +377,6 @@ public class GameController {
                     }
                 }
             } else if (handsLeft <= 0) {
-                won = false;
                 if (gameOverPopup != null) {
                     gameOverPopup.setVisible(true);
                 }

@@ -39,22 +39,6 @@ public class PlayerDatabase {
         }
     }
 
-    public static void addCurrency(int amount) {
-        PlayerData data = loadData();
-        data.setCurrency(data.getCurrency() + amount);
-        saveData(data);
-    }
-
-    public static void deductCurrency(int amount) {
-        PlayerData data = loadData();
-        data.setCurrency(Math.max(0, data.getCurrency() - amount));
-        saveData(data);
-    }
-
-    public static int getCurrency() {
-        return loadData().getCurrency();
-    }
-
     public static void saveRun(PlayerData.RunData runData) {
         PlayerData data = loadData();
         data.setActiveRun(runData);

@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerData {
-    private int currency;
     private RunData activeRun;
 
     public PlayerData() {
-        this.currency = 0;
         this.activeRun = null;
     }
-
-    public int getCurrency() { return currency; }
-    public void setCurrency(int currency) { this.currency = currency; }
 
     public RunData getActiveRun() { return activeRun; }
     public void setActiveRun(RunData activeRun) { this.activeRun = activeRun; }
@@ -30,15 +25,21 @@ public class PlayerData {
         private int targetPoints;
         private List<JokerData> ownedJokers;
         private List<JokerData> activeJokers;
+        private List<TarotData> ownedTarots;
+
+        private int coins;
 
         public RunData() {
             this.ownedJokers = new ArrayList<>();
             this.activeJokers = new ArrayList<>();
+            this.ownedTarots = new ArrayList<>();
+            this.coins = 0;
         }
 
         public RunData(String difficulty, double difficultyMultiplier, int currentAnte,
                        int maxAntes, int baseTargetScore, int targetPoints,
-                       List<JokerData> ownedJokers, List<JokerData> activeJokers) {
+                       List<JokerData> ownedJokers, List<JokerData> activeJokers, 
+                       List<TarotData> ownedTarots, int coins) {
             this.difficulty = difficulty;
             this.difficultyMultiplier = difficultyMultiplier;
             this.currentAnte = currentAnte;
@@ -47,6 +48,8 @@ public class PlayerData {
             this.targetPoints = targetPoints;
             this.ownedJokers = ownedJokers != null ? ownedJokers : new ArrayList<>();
             this.activeJokers = activeJokers != null ? activeJokers : new ArrayList<>();
+            this.ownedTarots = ownedTarots != null ? ownedTarots : new ArrayList<>();
+            this.coins = coins;
         }
 
         public String getDifficulty() { return difficulty; }
@@ -57,6 +60,8 @@ public class PlayerData {
         public int getTargetPoints() { return targetPoints; }
         public List<JokerData> getOwnedJokers() { return ownedJokers; }
         public List<JokerData> getActiveJokers() { return activeJokers; }
+        public List<TarotData> getOwnedTarots() { return ownedTarots; }
+        public int getCoins() { return coins; }
     }
 
     /**
@@ -84,5 +89,32 @@ public class PlayerData {
         public String getImagePath() { return imagePath; }
         public String getEffectType() { return effectType; }
         public int getEffectValue() { return effectValue; }
+    }
+
+    /**
+     * Serializable representation of a Tarot for JSON storage.
+     */
+    public static class TarotData {
+        private String name;
+        private String description;
+        private String imagePath;
+        private String effectType;
+        private int targetCount;
+
+        public TarotData() {}
+
+        public TarotData(String name, String description, String imagePath, String effectType, int targetCount) {
+            this.name = name;
+            this.description = description;
+            this.imagePath = imagePath;
+            this.effectType = effectType;
+            this.targetCount = targetCount;
+        }
+
+        public String getName() { return name; }
+        public String getDescription() { return description; }
+        public String getImagePath() { return imagePath; }
+        public String getEffectType() { return effectType; }
+        public int getTargetCount() { return targetCount; }
     }
 }

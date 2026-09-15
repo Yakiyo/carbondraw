@@ -36,16 +36,16 @@ public class ShopController {
     @FXML
     public void initialize() {
         // Update currency display
-        int currency = PlayerDatabase.getCurrency();
+        int currency = GameSession.getInstance().getCoins();
         if (currencyLabel != null) {
             currencyLabel.setText("Coins: " + currency);
         }
 
         // Initialize jokers available in the shop
         availableJokers = new ArrayList<>();
-        availableJokers.add(new Joker("Basic Joker", "Adds +20 Chips\nCost: 1000 Coins", "/cs/images/joker/joker_1.jpg", Joker.JokerEffect.ADD_CHIPS, 20));
-        availableJokers.add(new Joker("Multi Joker", "Adds +4 Mult\nCost: 1000 Coins", "/cs/images/joker/joker_2.jpg", Joker.JokerEffect.ADD_MULTI, 4));
-        availableJokers.add(new Joker("Foil Joker", "Multiplies Mult by 2\nCost: 1000 Coins", "/cs/images/joker/joker_3.jpg", Joker.JokerEffect.MULT_MULTI, 2));
+        availableJokers.add(new Joker("Basic Joker", "Adds +20 Chips\nCost: 200 Coins", "/cs/images/joker/joker_1.jpg", Joker.JokerEffect.ADD_CHIPS, 20));
+        availableJokers.add(new Joker("Multi Joker", "Adds +4 Mult\nCost: 200 Coins", "/cs/images/joker/joker_2.jpg", Joker.JokerEffect.ADD_MULTI, 4));
+        availableJokers.add(new Joker("Foil Joker", "Multiplies Mult by 2\nCost: 200 Coins", "/cs/images/joker/joker_3.jpg", Joker.JokerEffect.MULT_MULTI, 2));
 
         if (shopSectionTitle != null) {
             shopSectionTitle.setText("Welcome to the Shop!");
@@ -100,7 +100,7 @@ public class ShopController {
                 
                 if (buyButton != null) {
                     buyButton.setVisible(true);
-                    buyButton.setText("Buy " + joker.name() + " (1000 Coins)");
+                    buyButton.setText("Buy " + joker.name() + " (200 Coins)");
                 }
             });
 
@@ -110,7 +110,7 @@ public class ShopController {
             Tooltip.install(imageWrapper, tooltip);
 
             // Cost label
-            Label costLabel = new Label("1000 Coins");
+            Label costLabel = new Label("200 Coins");
             costLabel.setStyle("-fx-text-fill: #fca311; -fx-font-size: 18px; -fx-font-weight: bold;");
 
             itemBox.getChildren().addAll(imageWrapper, costLabel);
@@ -133,16 +133,16 @@ public class ShopController {
     @FXML
     private void handleBuyItem(ActionEvent event) {
         if (selectedJoker != null) {
-            int currentCoins = PlayerDatabase.getCurrency();
-            if (currentCoins >= 1000) {
+            GameSession session = GameSession.getInstance();
+            int currentCoins = session.getCoins();
+            if (currentCoins >= 200) {
                 // Deduct coins
-                PlayerDatabase.deductCurrency(1000);
+                session.deductCoins(200);
                 if (currencyLabel != null) {
-                    currencyLabel.setText("Coins: " + PlayerDatabase.getCurrency());
+                    currencyLabel.setText("Coins: " + session.getCoins());
                 }
 
                 // Add joker to owned AND active by default
-                GameSession session = GameSession.getInstance();
                 session.getOwnedJokers().add(selectedJoker);
                 session.getActiveJokers().add(selectedJoker);
 
