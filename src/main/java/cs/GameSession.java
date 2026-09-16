@@ -102,10 +102,13 @@ public class GameSession {
     }
 
     private Joker jokerFromData(PlayerData.JokerData jd) {
-        return new Joker(
-            jd.getName(), jd.getDescription(), jd.getImagePath(),
-            Joker.JokerEffect.valueOf(jd.getEffectType()), jd.getEffectValue()
-        );
+        return JokerRegistry.JOKERS.stream()
+            .filter(j -> j.name().equals(jd.getName()))
+            .findFirst()
+            .orElseGet(() -> new Joker(
+                jd.getName(), jd.getDescription(), jd.getImagePath(),
+                Joker.JokerEffect.valueOf(jd.getEffectType()), jd.getEffectValue()
+            ));
     }
 
     private PlayerData.JokerData dataFromJoker(Joker j) {

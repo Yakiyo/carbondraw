@@ -350,17 +350,39 @@ public class GameController {
         }
     }
 
-    private int[] calculateScoreWithJokers(int baseChips, int baseMult) {
+    private int[] calculateScoreWithJokers(HandResult bestHand, int discardsLeft, int baseChips, int baseMult) {
         int finalChips = baseChips;
         int finalMult = baseMult;
 
+        long renewableCount = bestHand == null ? 0 : bestHand.cardsUsed().stream().filter(c -> c.getOriginalSuit() != null && c.getOriginalSuit().contains("renewable")).count();
+        long biosphereCount = bestHand == null ? 0 : bestHand.cardsUsed().stream().filter(c -> c.getOriginalSuit() != null && c.getOriginalSuit().contains("biosphere")).count();
+        long greenTechCount = bestHand == null ? 0 : bestHand.cardsUsed().stream().filter(c -> c.getOriginalSuit() != null && c.getOriginalSuit().contains("green_tech")).count();
+        long policyCount = bestHand == null ? 0 : bestHand.cardsUsed().stream().filter(c -> c.getOriginalSuit() != null && c.getOriginalSuit().contains("policy")).count();
+        
+        String handName = bestHand == null ? "" : bestHand.handName();
+
         for (Joker joker : GameSession.getInstance().getActiveJokers()) {
-            if (joker.effectType() == Joker.JokerEffect.ADD_CHIPS) {
-                finalChips += joker.effectValue();
-            } else if (joker.effectType() == Joker.JokerEffect.ADD_MULTI) {
-                finalMult += joker.effectValue();
-            } else if (joker.effectType() == Joker.JokerEffect.MULT_MULTI) {
-                finalMult *= joker.effectValue();
+            switch (joker.effectType()) {
+                case ADD_CHIPS -> finalChips += joker.effectValue();
+                case ADD_MULTI -> finalMult += joker.effectValue();
+                case MULT_MULTI -> finalMult *= joker.effectValue();
+                case ADD_MULT_PER_RENEWABLE -> finalMult += (joker.effectValue() * (int)renewableCount);
+                case ADD_MULT_PER_BIOSPHERE -> finalMult += (joker.effectValue() * (int)biosphereCount);
+                case ADD_MULT_PER_GREENTECH -> finalMult += (joker.effectValue() * (int)greenTechCount);
+                case ADD_MULT_PER_POLICY -> finalMult += (joker.effectValue() * (int)policyCount);
+                case ADD_MULT_IF_PAIR -> { if (handName.contains("Grassroots Action") || handName.contains("Bilateral Agreement") || handName.contains("Symbiotic Loop")) finalMult += joker.effectValue(); }
+                case ADD_MULT_IF_THREE_KIND -> { if (handName.contains("Sector Focus") || handName.contains("Symbiotic Loop")) finalMult += joker.effectValue(); }
+                case ADD_MULT_IF_FOUR_KIND -> { if (handName.contains("Industry Overhaul")) finalMult += joker.effectValue(); }
+                case ADD_MULT_IF_STRAIGHT -> { if (handName.contains("Holistic Strategy") || handName.contains("Net Zero Earthshot")) finalMult += joker.effectValue(); }
+                case ADD_MULT_IF_FLUSH -> { if (handName.contains("Monoculture") || handName.contains("Net Zero Earthshot")) finalMult += joker.effectValue(); }
+                case ADD_CHIPS_IF_PAIR -> { if (handName.contains("Grassroots Action") || handName.contains("Bilateral Agreement") || handName.contains("Symbiotic Loop")) finalChips += joker.effectValue(); }
+                case ADD_CHIPS_IF_TWO_PAIR -> { if (handName.contains("Bilateral Agreement")) finalChips += joker.effectValue(); }
+                case ADD_CHIPS_IF_THREE_KIND -> { if (handName.contains("Sector Focus") || handName.contains("Symbiotic Loop")) finalChips += joker.effectValue(); }
+                case ADD_CHIPS_IF_STRAIGHT -> { if (handName.contains("Holistic Strategy") || handName.contains("Net Zero Earthshot")) finalChips += joker.effectValue(); }
+                case ADD_CHIPS_IF_FLUSH -> { if (handName.contains("Monoculture") || handName.contains("Net Zero Earthshot")) finalChips += joker.effectValue(); }
+                case ADD_MULT_IF_SMALL_HAND -> { if (bestHand != null && bestHand.cardsUsed().size() <= 3) finalMult += joker.effectValue(); }
+                case ADD_CHIPS_PER_DISCARD -> finalChips += (joker.effectValue() * discardsLeft);
+                case ADD_MULT_IF_NO_DISCARDS -> { if (discardsLeft == 0) finalMult += joker.effectValue(); }
             }
         }
         return new int[]{finalChips, finalMult};
@@ -403,7 +425,7 @@ public class GameController {
                 }
             }
 
-            int[] calculated = calculateScoreWithJokers(baseChips, mult);
+            int[] calculated = calculateScoreWithJokers(bestHand, discardsLeft, baseChips, mult);
             int pointsEarned = calculated[0] * calculated[1];
             currentScore += pointsEarned;
             
@@ -609,11 +631,7 @@ public class GameController {
 
             case SPAWN_JOKER:
                 if (session.getActiveJokers().size() < 5) {
-                    List<Joker> jokers = new ArrayList<>(List.of(
-                        new Joker("Basic Joker", "Adds +20 Chips", "/cs/images/joker/joker_1.jpg", Joker.JokerEffect.ADD_CHIPS, 20),
-                        new Joker("Multi Joker", "Adds +4 Mult", "/cs/images/joker/joker_2.jpg", Joker.JokerEffect.ADD_MULTI, 4),
-                        new Joker("Foil Joker", "Multiplies Mult by 2", "/cs/images/joker/joker_3.jpg", Joker.JokerEffect.MULT_MULTI, 2)
-                    ));
+                    List<Joker> jokers = new ArrayList<>(JokerRegistry.JOKERS);
                     Collections.shuffle(jokers);
                     session.getActiveJokers().add(jokers.get(0));
                     session.getOwnedJokers().add(jokers.get(0));
@@ -661,7 +679,7 @@ public class GameController {
                 baseChips += c.points();
             }
             
-            int[] calculated = calculateScoreWithJokers(baseChips, bestHand.mult());
+            int[] calculated = calculateScoreWithJokers(bestHand, discardsLeft, baseChips, bestHand.mult());
             
             baseChipsLabel.setText(String.valueOf(calculated[0]));
             multiplierLabel.setText(String.valueOf(calculated[1]));

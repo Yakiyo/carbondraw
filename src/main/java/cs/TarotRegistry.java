@@ -10,7 +10,7 @@ public class TarotRegistry {
         new Tarot(
             "Green Investment",
             "Doubles your current coins (Max 20 Coins).",
-            "/cs/images/tarot/green-investment.png",
+            "/cs/images/tarot/green_investment.png",
             Tarot.TarotEffect.GAIN_MONEY,
             0
         ),
@@ -24,7 +24,7 @@ public class TarotRegistry {
         new Tarot(
             "Carbon Tax",
             "Enhances 1 selected card to permanently give +4 Mult.",
-            "/cs/images/tarot/carbon-tax.png",
+            "/cs/images/tarot/carbon_tax.png",
             Tarot.TarotEffect.ENHANCE_MULTI,
             1
         ),
@@ -38,42 +38,42 @@ public class TarotRegistry {
         new Tarot(
             "Grid Integration",
             "Enhances 1 selected card to be a Wild card.",
-            "/cs/images/tarot/grid-integration.png",
+            "/cs/images/tarot/grid_integration.png",
             Tarot.TarotEffect.ENHANCE_WILD,
             1
         ),
         new Tarot(
             "Carbon Capture",
             "Enhances 1 selected card to be a Steel card.",
-            "/cs/images/tarot/carbon-capture.png",
+            "/cs/images/tarot/carbon_capture.png",
             Tarot.TarotEffect.ENHANCE_STEEL,
             1
         ),
         new Tarot(
             "Regulatory Mandate",
             "Enhances 1 selected card to be a Glass card.",
-            "/cs/images/tarot/regulatory-mandate.png",
+            "/cs/images/tarot/regulatory_mandate.png",
             Tarot.TarotEffect.ENHANCE_GLASS,
             1
         ),
         new Tarot(
             "Research Grant",
             "Destroys up to 2 selected cards permanently.",
-            "/cs/images/tarot/research-grant.png",
+            "/cs/images/tarot/research_grant.png",
             Tarot.TarotEffect.DESTROY_CARD,
             2
         ),
         new Tarot(
             "Global Summit",
             "Spawns 2 random Jokers (Must have room).",
-            "/cs/images/tarot/global-summit.png",
+            "/cs/images/tarot/global_summit.png",
             Tarot.TarotEffect.SPAWN_JOKER,
             0
         ),
         new Tarot(
             "Policy Overhaul",
             "Spawns 2 random Breakthroughs (Must have room).",
-            "/cs/images/tarot/policy-overhaul.png",
+            "/cs/images/tarot/policy_overhaul.png",
             Tarot.TarotEffect.SPAWN_TAROT,
             0
         )

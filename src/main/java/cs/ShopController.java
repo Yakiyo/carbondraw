@@ -48,10 +48,9 @@ public class ShopController {
             currencyLabel.setText("Coins: " + currency);
         }
 
-        availableJokers = new ArrayList<>();
-        availableJokers.add(new Joker("Basic Joker", "Adds +20 Chips\nCost: 200 Coins", "/cs/images/joker/joker_1.jpg", Joker.JokerEffect.ADD_CHIPS, 20));
-        availableJokers.add(new Joker("Multi Joker", "Adds +4 Mult\nCost: 200 Coins", "/cs/images/joker/joker_2.jpg", Joker.JokerEffect.ADD_MULTI, 4));
-        availableJokers.add(new Joker("Foil Joker", "Multiplies Mult by 2\nCost: 200 Coins", "/cs/images/joker/joker_3.jpg", Joker.JokerEffect.MULT_MULTI, 2));
+        availableJokers = new ArrayList<>(JokerRegistry.JOKERS);
+        Collections.shuffle(availableJokers);
+        availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(3, availableJokers.size())));
 
         // Initialize tarots available in the shop
         List<Tarot> allTarots = new ArrayList<>(TarotRegistry.TAROTS);
