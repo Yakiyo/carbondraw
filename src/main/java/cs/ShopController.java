@@ -310,12 +310,17 @@ public class ShopController {
 
                 if (selectedJoker != null) {
                     session.getOwnedJokers().add(selectedJoker);
-                    session.getActiveJokers().add(selectedJoker);
+                    if (session.getActiveJokers().size() < 3) {
+                        session.getActiveJokers().add(selectedJoker);
+                    }
                     selectedJoker = null;
                     if (buyButton != null) buyButton.setVisible(false);
                     handleShowJokers(null);
                 } else if (selectedTarot != null) {
                     session.getOwnedTarots().add(selectedTarot);
+                    if (session.getActiveTarots().size() < 5) {
+                        session.getActiveTarots().add(selectedTarot);
+                    }
                     selectedTarot = null;
                     if (buyButton != null) buyButton.setVisible(false);
                     handleShowTarots(null);

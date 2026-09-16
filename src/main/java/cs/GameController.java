@@ -134,7 +134,7 @@ public class GameController {
         if (gameOverPopup != null) gameOverPopup.setVisible(false);
 
         renderJokers(session.getActiveJokers());
-        renderTarots(session.getOwnedTarots());
+        renderTarots(session.getActiveTarots());
         renderCards(currentHand);
     }
 
@@ -640,10 +640,12 @@ public class GameController {
                 break;
 
             case SPAWN_TAROT:
-                if (session.getOwnedTarots().size() < 2) {
+                if (session.getActiveTarots().size() < 5) {
                     List<Tarot> tarots = new ArrayList<>(TarotRegistry.TAROTS);
                     Collections.shuffle(tarots);
-                    session.getOwnedTarots().add(tarots.get(0));
+                    Tarot newTarot = tarots.get(0);
+                    session.getOwnedTarots().add(newTarot);
+                    session.getActiveTarots().add(newTarot);
                     used = true;
                 }
                 break;
@@ -651,12 +653,13 @@ public class GameController {
 
         if (used) {
             session.getOwnedTarots().remove(selectedTarot);
+            session.getActiveTarots().remove(selectedTarot);
             selectedTarot = null;
             selectedCards.clear();
             session.saveRunToDatabase();
             
             // Re-render everything
-            renderTarots(session.getOwnedTarots());
+            renderTarots(session.getActiveTarots());
             renderJokers(session.getActiveJokers());
             renderCards(currentHand);
             updateTarotButtonState();

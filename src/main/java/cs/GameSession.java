@@ -19,6 +19,7 @@ public class GameSession {
     private List<Joker> ownedJokers = new ArrayList<>();
     private List<Joker> activeJokers = new ArrayList<>();
     private List<Tarot> ownedTarots = new ArrayList<>();
+    private List<Tarot> activeTarots = new ArrayList<>();
     private List<Card> currentDeck = new ArrayList<>();
     private List<Joker> currentShopJokers = new ArrayList<>();
     private List<Tarot> currentShopTarots = new ArrayList<>();
@@ -94,6 +95,13 @@ public class GameSession {
         if (runData.getOwnedTarots() != null) {
             for (PlayerData.TarotData td : runData.getOwnedTarots()) {
                 this.ownedTarots.add(tarotFromData(td));
+            }
+        }
+        
+        this.activeTarots.clear();
+        if (runData.getActiveTarots() != null) {
+            for (PlayerData.TarotData td : runData.getActiveTarots()) {
+                this.activeTarots.add(tarotFromData(td));
             }
         }
 
@@ -182,6 +190,8 @@ public class GameSession {
             .map(this::dataFromJoker).collect(Collectors.toList());
         List<PlayerData.TarotData> tarotData = ownedTarots.stream()
             .map(this::dataFromTarot).collect(Collectors.toList());
+        List<PlayerData.TarotData> activeTarotData = activeTarots.stream()
+            .map(this::dataFromTarot).collect(Collectors.toList());
         List<PlayerData.CardData> deckData = currentDeck.stream()
             .map(this::dataFromCard).collect(Collectors.toList());
         List<PlayerData.JokerData> shopJokersData = currentShopJokers.stream()
@@ -191,7 +201,7 @@ public class GameSession {
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, deckData, 
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, activeTarotData, deckData, 
             shopJokersData, shopTarotsData, coins, shopResetUsed
         );
         PlayerDatabase.saveRun(runData);
@@ -223,6 +233,7 @@ public class GameSession {
         this.ownedJokers.clear();
         this.activeJokers.clear();
         this.ownedTarots.clear();
+        this.activeTarots.clear();
         this.currentDeck.clear();
         
         PlayerDatabase.clearRun();
@@ -250,6 +261,7 @@ public class GameSession {
     public List<Joker> getOwnedJokers() { return ownedJokers; }
     public List<Joker> getActiveJokers() { return activeJokers; }
     public List<Tarot> getOwnedTarots() { return ownedTarots; }
+    public List<Tarot> getActiveTarots() { return activeTarots; }
     public List<Card> getCurrentDeck() { return currentDeck; }
     public List<Joker> getCurrentShopJokers() { return currentShopJokers; }
     public List<Tarot> getCurrentShopTarots() { return currentShopTarots; }

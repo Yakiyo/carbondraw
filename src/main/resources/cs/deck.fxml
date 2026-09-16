@@ -22,6 +22,7 @@
                     <VBox alignment="CENTER" spacing="15.0" styleClass="panel-section" VBox.vgrow="ALWAYS">
                         <Button onAction="#handleShowJokers" styleClass="menu-button, btn-settings" text="Joker Cards" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                         <Button onAction="#handleShowTarots" styleClass="menu-button, btn-play" text="Tarot Cards" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
+                        <Button onAction="#handleShowVouchers" styleClass="menu-button" text="Vouchers" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #6a0dad;" />
                     </VBox>
 
                     <Region VBox.vgrow="ALWAYS" />
@@ -34,12 +35,22 @@
 
             <!-- RIGHT CONTENT AREA -->
             <center>
-                <VBox alignment="CENTER" spacing="30.0" BorderPane.alignment="CENTER" style="-fx-padding: 50px;">
+                <VBox alignment="TOP_CENTER" spacing="20.0" BorderPane.alignment="CENTER" style="-fx-padding: 30px;">
                     <Label fx:id="deckSectionTitle" text="Your Loadout" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
                     
-                    <HBox fx:id="deckItemsContainer" alignment="CENTER" spacing="40.0" styleClass="card-slot-container" style="-fx-padding: 50px; -fx-min-height: 400px; -fx-min-width: 800px;">
-                        <!-- Deck items dynamically injected here -->
-                    </HBox>
+                    <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10px;">
+                        <Label fx:id="activeSectionTitle" text="Active (0/0)" style="-fx-font-size: 24px; -fx-text-fill: #6fe3b1; -fx-font-weight: bold;"/>
+                        <HBox fx:id="activeItemsContainer" alignment="CENTER" spacing="20.0" styleClass="card-slot-container" style="-fx-padding: 20px; -fx-min-height: 280px; -fx-min-width: 800px; -fx-border-color: #6fe3b1; -fx-border-width: 2px; -fx-border-radius: 15px; -fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 15px;">
+                            <!-- Active items injected here -->
+                        </HBox>
+                    </VBox>
+                    
+                    <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10px;">
+                        <Label fx:id="ownedSectionTitle" text="Owned" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                        <HBox fx:id="ownedItemsContainer" alignment="CENTER" spacing="20.0" styleClass="card-slot-container" style="-fx-padding: 20px; -fx-min-height: 280px; -fx-min-width: 800px; -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 2px; -fx-border-radius: 15px; -fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 15px;">
+                            <!-- Owned items injected here -->
+                        </HBox>
+                    </VBox>
                 </VBox>
             </center>
         </BorderPane>
