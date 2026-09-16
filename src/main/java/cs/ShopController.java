@@ -44,6 +44,7 @@ public class ShopController {
 
     private List<Tarot> availableTarots;
     private Tarot selectedTarot = null;
+    private Voucher selectedVoucher = null;
 
     @FXML
     public void initialize() {
@@ -56,13 +57,29 @@ public class ShopController {
         GameSession session = GameSession.getInstance();
 
         if (session.getCurrentShopJokers().isEmpty() || session.getCurrentShopTarots().isEmpty()) {
+            int shopSlots = 4 + session.getExtraShopSlots();
+            
             availableJokers = new ArrayList<>(JokerRegistry.JOKERS);
             Collections.shuffle(availableJokers);
-            availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(4, availableJokers.size())));
+            availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(shopSlots, availableJokers.size())));
 
             List<Tarot> allTarots = new ArrayList<>(TarotRegistry.TAROTS);
             Collections.shuffle(allTarots);
-            availableTarots = new ArrayList<>(allTarots.subList(0, Math.min(4, allTarots.size())));
+            availableTarots = new ArrayList<>(allTarots.subList(0, Math.min(shopSlots, allTarots.size())));
+
+            // Pick a random unowned voucher
+            List<Voucher> possibleVouchers = new ArrayList<>();
+            for (Voucher v : VoucherRegistry.VOUCHERS) {
+                if (!session.getOwnedVouchers().contains(v.name())) {
+                    possibleVouchers.add(v);
+                }
+            }
+            if (!possibleVouchers.isEmpty()) {
+                Collections.shuffle(possibleVouchers);
+                session.setCurrentShopVoucher(possibleVouchers.get(0).name());
+            } else {
+                session.setCurrentShopVoucher(null);
+            }
 
             session.getCurrentShopJokers().clear();
             session.getCurrentShopJokers().addAll(availableJokers);
@@ -96,6 +113,7 @@ public class ShopController {
         if (shopSectionTitle != null) shopSectionTitle.setText("Joker Cards");
         selectedJoker = null;
         selectedTarot = null;
+        selectedVoucher = null;
         if (buyButton != null) buyButton.setVisible(false);
         if (shopItemsContainer != null) {
             shopItemsContainer.getChildren().clear();
@@ -139,6 +157,8 @@ public class ShopController {
                 imageWrapper.setPrefSize(150, 217);
             }
 
+            int itemCost = GameSession.getInstance().isShopDiscountActive() ? 150 : 200;
+
             // Click to select
             itemBox.setOnMouseClicked(e -> {
                 for (javafx.scene.Node node : shopItemsContainer.getChildren()) {
@@ -149,7 +169,7 @@ public class ShopController {
                 
                 if (buyButton != null) {
                     buyButton.setVisible(true);
-                    buyButton.setText("Buy " + joker.name() + " (200 Coins)");
+                    buyButton.setText("Buy " + joker.name() + " (" + itemCost + " Coins)");
                 }
             });
 
@@ -159,7 +179,7 @@ public class ShopController {
             Tooltip.install(imageWrapper, tooltip);
 
             // Cost label
-            Label costLabel = new Label("200 Coins");
+            Label costLabel = new Label(itemCost + " Coins");
             costLabel.setStyle("-fx-text-fill: #fca311; -fx-font-size: 18px; -fx-font-weight: bold;");
 
             itemBox.getChildren().addAll(imageWrapper, costLabel);
@@ -174,6 +194,7 @@ public class ShopController {
         if (shopSectionTitle != null) shopSectionTitle.setText("Tarot Cards");
         selectedJoker = null;
         selectedTarot = null;
+        selectedVoucher = null;
         if (buyButton != null) buyButton.setVisible(false);
         if (shopItemsContainer != null) {
             shopItemsContainer.getChildren().clear();
@@ -215,6 +236,8 @@ public class ShopController {
                     imageWrapper.setPrefSize(150, 217);
                 }
 
+                int itemCost = GameSession.getInstance().isShopDiscountActive() ? 150 : 200;
+
                 itemBox.setOnMouseClicked(e -> {
                     for (javafx.scene.Node node : shopItemsContainer.getChildren()) {
                         node.setStyle(""); // Clear selection border
@@ -225,7 +248,7 @@ public class ShopController {
                     
                     if (buyButton != null) {
                         buyButton.setVisible(true);
-                        buyButton.setText("Buy " + tarot.name() + " (200 Coins)");
+                        buyButton.setText("Buy " + tarot.name() + " (" + itemCost + " Coins)");
                     }
                 });
 
@@ -234,7 +257,7 @@ public class ShopController {
                 tooltip.setShowDelay(Duration.millis(100));
                 Tooltip.install(imageWrapper, tooltip);
 
-                Label costLabel = new Label("200 Coins");
+                Label costLabel = new Label(itemCost + " Coins");
                 costLabel.setStyle("-fx-text-fill: #fca311; -fx-font-size: 18px; -fx-font-weight: bold;");
 
                 itemBox.getChildren().addAll(imageWrapper, costLabel);
@@ -249,20 +272,82 @@ public class ShopController {
         if (shopSectionTitle != null) shopSectionTitle.setText("Vouchers");
         selectedJoker = null;
         selectedTarot = null;
+        selectedVoucher = null;
         if (buyButton != null) buyButton.setVisible(false);
         if (shopItemsContainer != null) {
             shopItemsContainer.getChildren().clear();
-            Label emptyLabel = new Label("Vouchers Coming Soon...");
-            emptyLabel.setStyle("-fx-font-size: 32px; -fx-text-fill: white; -fx-font-weight: bold;");
-            shopItemsContainer.getChildren().add(emptyLabel);
+            GameSession session = GameSession.getInstance();
+            
+            if (session.getCurrentShopVoucher() != null) {
+                Voucher voucher = VoucherRegistry.getByName(session.getCurrentShopVoucher());
+                if (voucher != null) {
+                    VBox itemBox = new VBox(10);
+                    itemBox.setStyle("-fx-alignment: center; -fx-padding: 10px; -fx-cursor: hand;");
+
+                    StackPane imageWrapper = new StackPane();
+                    imageWrapper.getStyleClass().add("joker-image-wrapper");
+
+                    try {
+                        Image img = new Image(getClass().getResource(voucher.imagePath()).toExternalForm());
+                        ImageView imgView = new ImageView(img);
+                        imgView.setFitWidth(200);
+                        imgView.setFitHeight(200); // Vouchers are generally square or different aspect ratio
+                        imgView.setPreserveRatio(true);
+
+                        Rectangle clip = new Rectangle(200, 200);
+                        clip.setArcWidth(15);
+                        clip.setArcHeight(15);
+                        imgView.setClip(clip);
+
+                        imageWrapper.getChildren().add(imgView);
+                    } catch (Exception e) {
+                        System.err.println("Could not load voucher image: " + voucher.imagePath());
+                        Label errorLabel = new Label(voucher.name());
+                        errorLabel.setStyle("-fx-text-fill: white; -fx-padding: 10px;");
+                        imageWrapper.getChildren().add(errorLabel);
+                        imageWrapper.setPrefSize(200, 200);
+                    }
+
+                    itemBox.setOnMouseClicked(e -> {
+                        for (javafx.scene.Node node : shopItemsContainer.getChildren()) {
+                            node.setStyle(""); // Clear selection border
+                        }
+                        itemBox.setStyle("-fx-border-color: #fca311; -fx-border-width: 4px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+                        selectedVoucher = voucher;
+                        selectedJoker = null;
+                        selectedTarot = null;
+                        
+                        if (buyButton != null) {
+                            buyButton.setVisible(true);
+                            buyButton.setText("Buy " + voucher.name() + " (800 Coins)");
+                        }
+                    });
+
+                    Tooltip tooltip = new Tooltip(voucher.name() + "\n" + voucher.description());
+                    tooltip.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+                    tooltip.setShowDelay(Duration.millis(100));
+                    Tooltip.install(imageWrapper, tooltip);
+
+                    Label costLabel = new Label("800 Coins");
+                    costLabel.setStyle("-fx-text-fill: #fca311; -fx-font-size: 24px; -fx-font-weight: bold;");
+
+                    itemBox.getChildren().addAll(imageWrapper, costLabel);
+                    shopItemsContainer.getChildren().add(itemBox);
+                }
+            } else {
+                Label emptyLabel = new Label("Sold Out!");
+                emptyLabel.setStyle("-fx-font-size: 32px; -fx-text-fill: white; -fx-font-weight: bold;");
+                shopItemsContainer.getChildren().add(emptyLabel);
+            }
         }
     }
 
     @FXML
     private void handleResetShop(ActionEvent event) {
         GameSession session = GameSession.getInstance();
-        if (session.getCoins() >= 50 && !session.isShopResetUsed()) {
-            session.deductCoins(50);
+        int resetCost = session.isRerollDiscountActive() ? 25 : 50;
+        if (session.getCoins() >= resetCost && !session.isShopResetUsed()) {
+            session.deductCoins(resetCost);
             session.setShopResetUsed(true);
             if (currencyLabel != null) {
                 currencyLabel.setText("Coins: " + session.getCoins());
@@ -289,7 +374,7 @@ public class ShopController {
             if (currentTab.equals("jokers")) handleShowJokers(null);
             else if (currentTab.equals("tarots")) handleShowTarots(null);
             else handleShowVouchers(null);
-        } else if (session.getCoins() < 50 && !session.isShopResetUsed()) {
+        } else if (session.getCoins() < resetCost && !session.isShopResetUsed()) {
             if (resetShopButton != null) {
                 resetShopButton.setText("Not enough Coins!");
             }
@@ -298,19 +383,47 @@ public class ShopController {
 
     @FXML
     private void handleBuyItem(ActionEvent event) {
-        if (selectedJoker != null || selectedTarot != null) {
+        if (selectedJoker != null || selectedTarot != null || selectedVoucher != null) {
             GameSession session = GameSession.getInstance();
             int currentCoins = session.getCoins();
-            if (currentCoins >= 200) {
+            
+            if (selectedVoucher != null) {
+                if (currentCoins >= 800) {
+                    session.deductCoins(800);
+                    session.getOwnedVouchers().add(selectedVoucher.name());
+                    
+                    switch (selectedVoucher.effectType()) {
+                        case EXTRA_JOKER_SLOT -> session.setExtraJokerSlots(session.getExtraJokerSlots() + 1);
+                        case CLEARANCE_SALE -> session.setShopDiscountActive(true);
+                        case EXTRA_HAND -> session.addExtraHands(1);
+                        case OVERSTOCK -> session.setExtraShopSlots(session.getExtraShopSlots() + 1);
+                        case REROLL_SURPLUS -> session.setRerollDiscountActive(true);
+                        case EXTRA_DISCARD -> session.addExtraDiscards(1);
+                    }
+                    
+                    session.setCurrentShopVoucher(null); // Sold out for this shop
+                    selectedVoucher = null;
+                    if (buyButton != null) buyButton.setVisible(false);
+                    if (currencyLabel != null) currencyLabel.setText("Coins: " + session.getCoins());
+                    handleShowVouchers(null);
+                    session.saveRunToDatabase();
+                } else {
+                    if (buyButton != null) buyButton.setText("Not enough Coins!");
+                }
+                return;
+            }
+            
+            int itemCost = session.isShopDiscountActive() ? 150 : 200;
+            if (currentCoins >= itemCost) {
                 // Deduct coins
-                session.deductCoins(200);
+                session.deductCoins(itemCost);
                 if (currencyLabel != null) {
                     currencyLabel.setText("Coins: " + session.getCoins());
                 }
 
                 if (selectedJoker != null) {
                     session.getOwnedJokers().add(selectedJoker);
-                    if (session.getActiveJokers().size() < 3) {
+                    if (session.getActiveJokers().size() < 3 + session.getExtraJokerSlots()) {
                         session.getActiveJokers().add(selectedJoker);
                     }
                     selectedJoker = null;

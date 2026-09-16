@@ -36,6 +36,13 @@ public class PlayerData {
         private int extraHands;
         private int extraDiscards;
 
+        private List<String> ownedVouchers;
+        private String currentShopVoucher;
+        private int extraJokerSlots;
+        private boolean shopDiscountActive;
+        private int extraShopSlots;
+        private boolean rerollDiscountActive;
+
         public RunData() {
             this.ownedJokers = new ArrayList<>();
             this.activeJokers = new ArrayList<>();
@@ -48,6 +55,13 @@ public class PlayerData {
             this.shopResetUsed = false;
             this.extraHands = 0;
             this.extraDiscards = 0;
+            
+            this.ownedVouchers = new ArrayList<>();
+            this.currentShopVoucher = null;
+            this.extraJokerSlots = 0;
+            this.shopDiscountActive = false;
+            this.extraShopSlots = 0;
+            this.rerollDiscountActive = false;
         }
 
         public RunData(String difficulty, double difficultyMultiplier, int currentAnte,
@@ -55,7 +69,9 @@ public class PlayerData {
                        List<JokerData> ownedJokers, List<JokerData> activeJokers, 
                        List<TarotData> ownedTarots, List<TarotData> activeTarots, List<CardData> deck, 
                        List<JokerData> shopJokers, List<TarotData> shopTarots, 
-                       int coins, boolean shopResetUsed, int extraHands, int extraDiscards) {
+                       int coins, boolean shopResetUsed, int extraHands, int extraDiscards,
+                       List<String> ownedVouchers, String currentShopVoucher, int extraJokerSlots,
+                       boolean shopDiscountActive, int extraShopSlots, boolean rerollDiscountActive) {
             this.difficulty = difficulty;
             this.difficultyMultiplier = difficultyMultiplier;
             this.currentAnte = currentAnte;
@@ -73,6 +89,13 @@ public class PlayerData {
             this.shopResetUsed = shopResetUsed;
             this.extraHands = extraHands;
             this.extraDiscards = extraDiscards;
+            
+            this.ownedVouchers = ownedVouchers != null ? ownedVouchers : new ArrayList<>();
+            this.currentShopVoucher = currentShopVoucher;
+            this.extraJokerSlots = extraJokerSlots;
+            this.shopDiscountActive = shopDiscountActive;
+            this.extraShopSlots = extraShopSlots;
+            this.rerollDiscountActive = rerollDiscountActive;
         }
 
         public String getDifficulty() { return difficulty; }
@@ -92,6 +115,13 @@ public class PlayerData {
         public boolean isShopResetUsed() { return shopResetUsed; }
         public int getExtraHands() { return extraHands; }
         public int getExtraDiscards() { return extraDiscards; }
+        
+        public List<String> getOwnedVouchers() { return ownedVouchers; }
+        public String getCurrentShopVoucher() { return currentShopVoucher; }
+        public int getExtraJokerSlots() { return extraJokerSlots; }
+        public boolean isShopDiscountActive() { return shopDiscountActive; }
+        public int getExtraShopSlots() { return extraShopSlots; }
+        public boolean isRerollDiscountActive() { return rerollDiscountActive; }
     }
 
     /**

@@ -34,6 +34,13 @@
             <version>${javafx.version}</version>
         </dependency>
 
+        <!-- JavaFX Media (For audio) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
         <!-- MySQL Database Connector -->
         <dependency>
             <groupId>com.mysql</groupId>

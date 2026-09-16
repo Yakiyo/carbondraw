@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 /**
  * JavaFX Application.
@@ -13,6 +15,7 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     private static Scene scene;
+    private static MediaPlayer bgMediaPlayer;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -22,7 +25,38 @@ public class App extends Application {
 
         stage.setTitle("Carbon Draw - The Roguelike Deckbuilder");
         stage.setScene(scene);
+        
+        startBackgroundMusic();
+        
         stage.show();
+    }
+
+    private void startBackgroundMusic() {
+        try {
+            java.net.URL resource = App.class.getResource("/cs/audio/game_bg.mp3");
+            if (resource != null) {
+                Media bgMedia = new Media(resource.toString());
+                bgMediaPlayer = new MediaPlayer(bgMedia);
+                bgMediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                bgMediaPlayer.setVolume(0.5); // Set a reasonable volume
+                bgMediaPlayer.play();
+            } else {
+                System.out.println("Background music file not found!");
+            }
+        } catch (Exception e) {
+            System.err.println("Could not load background music:");
+            e.printStackTrace();
+        }
+    }
+
+    public static void toggleBackgroundMusic() {
+        if (bgMediaPlayer != null) {
+            if (bgMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                bgMediaPlayer.pause();
+            } else {
+                bgMediaPlayer.play();
+            }
+        }
     }
 
     public static void setRoot(String fxml) throws IOException {

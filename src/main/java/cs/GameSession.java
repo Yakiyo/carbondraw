@@ -28,6 +28,13 @@ public class GameSession {
     private int extraHands;
     private int extraDiscards;
 
+    private List<String> ownedVouchers = new ArrayList<>();
+    private String currentShopVoucher = null;
+    private int extraJokerSlots = 0;
+    private boolean shopDiscountActive = false;
+    private int extraShopSlots = 0;
+    private boolean rerollDiscountActive = false;
+
     private GameSession() {}
 
     public static GameSession getInstance() {
@@ -56,6 +63,13 @@ public class GameSession {
         this.shopResetUsed = false;
         this.extraHands = 0;
         this.extraDiscards = 0;
+
+        this.ownedVouchers.clear();
+        this.currentShopVoucher = null;
+        this.extraJokerSlots = 0;
+        this.shopDiscountActive = false;
+        this.extraShopSlots = 0;
+        this.rerollDiscountActive = false;
         
         // Save the run immediately so it can be continued later
         saveRunToDatabase();
@@ -79,6 +93,16 @@ public class GameSession {
         this.shopResetUsed = runData.isShopResetUsed();
         this.extraHands = runData.getExtraHands();
         this.extraDiscards = runData.getExtraDiscards();
+        
+        this.ownedVouchers.clear();
+        if (runData.getOwnedVouchers() != null) {
+            this.ownedVouchers.addAll(runData.getOwnedVouchers());
+        }
+        this.currentShopVoucher = runData.getCurrentShopVoucher();
+        this.extraJokerSlots = runData.getExtraJokerSlots();
+        this.shopDiscountActive = runData.isShopDiscountActive();
+        this.extraShopSlots = runData.getExtraShopSlots();
+        this.rerollDiscountActive = runData.isRerollDiscountActive();
 
         // Restore owned jokers
         this.ownedJokers.clear();
@@ -208,7 +232,8 @@ public class GameSession {
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
             maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, activeTarotData, deckData, 
-            shopJokersData, shopTarotsData, coins, shopResetUsed, extraHands, extraDiscards
+            shopJokersData, shopTarotsData, coins, shopResetUsed, extraHands, extraDiscards,
+            ownedVouchers, currentShopVoucher, extraJokerSlots, shopDiscountActive, extraShopSlots, rerollDiscountActive
         );
         PlayerDatabase.saveRun(runData);
     }
@@ -243,6 +268,13 @@ public class GameSession {
         this.currentDeck.clear();
         this.extraHands = 0;
         this.extraDiscards = 0;
+        
+        this.ownedVouchers.clear();
+        this.currentShopVoucher = null;
+        this.extraJokerSlots = 0;
+        this.shopDiscountActive = false;
+        this.extraShopSlots = 0;
+        this.rerollDiscountActive = false;
         
         PlayerDatabase.clearRun();
     }
@@ -279,4 +311,16 @@ public class GameSession {
     public void addExtraHands(int amount) { this.extraHands += amount; }
     public int getExtraDiscards() { return extraDiscards; }
     public void addExtraDiscards(int amount) { this.extraDiscards += amount; }
+
+    public List<String> getOwnedVouchers() { return ownedVouchers; }
+    public String getCurrentShopVoucher() { return currentShopVoucher; }
+    public void setCurrentShopVoucher(String currentShopVoucher) { this.currentShopVoucher = currentShopVoucher; }
+    public int getExtraJokerSlots() { return extraJokerSlots; }
+    public void setExtraJokerSlots(int extraJokerSlots) { this.extraJokerSlots = extraJokerSlots; }
+    public boolean isShopDiscountActive() { return shopDiscountActive; }
+    public void setShopDiscountActive(boolean shopDiscountActive) { this.shopDiscountActive = shopDiscountActive; }
+    public int getExtraShopSlots() { return extraShopSlots; }
+    public void setExtraShopSlots(int extraShopSlots) { this.extraShopSlots = extraShopSlots; }
+    public boolean isRerollDiscountActive() { return rerollDiscountActive; }
+    public void setRerollDiscountActive(boolean rerollDiscountActive) { this.rerollDiscountActive = rerollDiscountActive; }
 }

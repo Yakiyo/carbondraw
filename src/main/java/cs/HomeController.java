@@ -72,4 +72,9 @@ public class HomeController {
         Platform.exit();
         System.exit(0);
     }
+
+    @FXML
+    private void handleToggleMusic(ActionEvent event) {
+        App.toggleBackgroundMusic();
+    }
 }

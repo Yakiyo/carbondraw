@@ -49,8 +49,9 @@ public class DeckController {
         List<Joker> owned = session.getOwnedJokers();
         List<Joker> active = session.getActiveJokers();
 
+        int maxJokers = 3 + session.getExtraJokerSlots();
         if (activeSectionTitle != null) {
-            activeSectionTitle.setText(String.format("Active Jokers (%d/3)", active.size()));
+            activeSectionTitle.setText(String.format("Active Jokers (%d/%d)", active.size(), maxJokers));
         }
         if (ownedSectionTitle != null) {
             ownedSectionTitle.setText("Owned Jokers");
@@ -141,7 +142,8 @@ public class DeckController {
         if (isCurrentlyActive) {
             active.removeIf(j -> j.name().equals(joker.name()));
         } else {
-            if (active.size() < 3) {
+            int maxJokers = 3 + session.getExtraJokerSlots();
+            if (active.size() < maxJokers) {
                 active.add(joker);
             }
         }
@@ -264,9 +266,58 @@ public class DeckController {
         
         if (ownedItemsContainer != null) {
             ownedItemsContainer.getChildren().clear();
-            Label placeholder = new Label("Vouchers Coming Soon...");
-            placeholder.setStyle("-fx-text-fill: rgba(255, 255, 255, 0.5); -fx-font-size: 24px;");
-            ownedItemsContainer.getChildren().add(placeholder);
+            GameSession session = GameSession.getInstance();
+            List<String> ownedVouchers = session.getOwnedVouchers();
+            
+            if (ownedVouchers.isEmpty()) {
+                Label placeholder = new Label("No Vouchers owned yet. Find them in the Shop!");
+                placeholder.setStyle("-fx-text-fill: rgba(255, 255, 255, 0.5); -fx-font-size: 24px;");
+                ownedItemsContainer.getChildren().add(placeholder);
+            } else {
+                for (String vName : ownedVouchers) {
+                    Voucher voucher = VoucherRegistry.getByName(vName);
+                    if (voucher != null) {
+                        VBox itemBox = new VBox();
+                        itemBox.setAlignment(javafx.geometry.Pos.CENTER);
+                        itemBox.setSpacing(10);
+
+                        StackPane imageWrapper = new StackPane();
+                        imageWrapper.getStyleClass().add("joker-image-wrapper");
+
+                        try {
+                            Image img = new Image(getClass().getResourceAsStream(voucher.imagePath()));
+                            ImageView imgView = new ImageView(img);
+                            imgView.setFitWidth(150);
+                            imgView.setFitHeight(150);
+                            imgView.setPreserveRatio(true);
+
+                            Rectangle clip = new Rectangle(150, 150);
+                            clip.setArcWidth(15);
+                            clip.setArcHeight(15);
+                            imgView.setClip(clip);
+
+                            imageWrapper.getChildren().add(imgView);
+                        } catch (Exception e) {
+                            Label errorLabel = new Label(voucher.name());
+                            errorLabel.setStyle("-fx-text-fill: white; -fx-padding: 10px;");
+                            imageWrapper.getChildren().add(errorLabel);
+                            imageWrapper.setPrefSize(150, 150);
+                        }
+
+                        Tooltip tooltip = new Tooltip(voucher.name() + "\n" + voucher.description());
+                        tooltip.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+                        tooltip.setShowDelay(Duration.millis(100));
+                        Tooltip.install(imageWrapper, tooltip);
+
+                        Label statusLabel = new Label("OWNED");
+                        statusLabel.setStyle("-fx-text-fill: #fca311; -fx-font-size: 16px; -fx-font-weight: bold;");
+                        
+                        itemBox.setStyle("-fx-border-color: #fca311; -fx-border-width: 3px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px;");
+                        itemBox.getChildren().addAll(imageWrapper, statusLabel);
+                        ownedItemsContainer.getChildren().add(itemBox);
+                    }
+                }
+            }
         }
     }
 
