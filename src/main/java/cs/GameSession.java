@@ -25,6 +25,8 @@ public class GameSession {
     private List<Tarot> currentShopTarots = new ArrayList<>();
     private int coins;
     private boolean shopResetUsed;
+    private int extraHands;
+    private int extraDiscards;
 
     private GameSession() {}
 
@@ -52,6 +54,8 @@ public class GameSession {
         this.currentShopTarots.clear();
         this.coins = 0;
         this.shopResetUsed = false;
+        this.extraHands = 0;
+        this.extraDiscards = 0;
         
         // Save the run immediately so it can be continued later
         saveRunToDatabase();
@@ -73,6 +77,8 @@ public class GameSession {
         this.currentScore = 0;
         this.coins = runData.getCoins();
         this.shopResetUsed = runData.isShopResetUsed();
+        this.extraHands = runData.getExtraHands();
+        this.extraDiscards = runData.getExtraDiscards();
 
         // Restore owned jokers
         this.ownedJokers.clear();
@@ -202,7 +208,7 @@ public class GameSession {
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
             maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, activeTarotData, deckData, 
-            shopJokersData, shopTarotsData, coins, shopResetUsed
+            shopJokersData, shopTarotsData, coins, shopResetUsed, extraHands, extraDiscards
         );
         PlayerDatabase.saveRun(runData);
     }
@@ -235,6 +241,8 @@ public class GameSession {
         this.ownedTarots.clear();
         this.activeTarots.clear();
         this.currentDeck.clear();
+        this.extraHands = 0;
+        this.extraDiscards = 0;
         
         PlayerDatabase.clearRun();
     }
@@ -267,4 +275,8 @@ public class GameSession {
     public List<Tarot> getCurrentShopTarots() { return currentShopTarots; }
     public boolean isShopResetUsed() { return shopResetUsed; }
     public void setShopResetUsed(boolean shopResetUsed) { this.shopResetUsed = shopResetUsed; }
+    public int getExtraHands() { return extraHands; }
+    public void addExtraHands(int amount) { this.extraHands += amount; }
+    public int getExtraDiscards() { return extraDiscards; }
+    public void addExtraDiscards(int amount) { this.extraDiscards += amount; }
 }

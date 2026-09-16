@@ -123,9 +123,10 @@ public class GameController {
             currentHand.add(remainingDeck.remove(0));
         }
 
-        discardsLeft = 3;
+        int scaleBonus = (session.getCurrentAnte() - 1) / 2;
+        discardsLeft = 4 + scaleBonus + session.getExtraDiscards();
         currentScore = 0;
-        handsLeft = 4;
+        handsLeft = 4 + scaleBonus + session.getExtraHands();
         
         if (discardsLabel != null) discardsLabel.setText(String.valueOf(discardsLeft));
         if (discardButton != null) discardButton.setDisable(false);
@@ -433,12 +434,10 @@ public class GameController {
                 scoreLabel.setText(String.valueOf(currentScore));
             }
 
-            // Replace played cards with new cards from remaining deck
+            // Remove played cards without replacing them
             for (Card playedCard : selectedCards) {
                 int index = currentHand.indexOf(playedCard);
-                if (index != -1 && !remainingDeck.isEmpty()) {
-                    currentHand.set(index, remainingDeck.remove(0));
-                } else if (index != -1) {
+                if (index != -1) {
                     currentHand.remove(index);
                 }
 
