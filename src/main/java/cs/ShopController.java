@@ -34,8 +34,13 @@ public class ShopController {
     @FXML
     private javafx.scene.control.Button playNextRoundButton;
 
+    @FXML
+    private javafx.scene.control.Button resetShopButton;
+
     private List<Joker> availableJokers;
     private Joker selectedJoker = null;
+    
+    private String currentTab = "jokers";
 
     private List<Tarot> availableTarots;
     private Tarot selectedTarot = null;
@@ -48,14 +53,26 @@ public class ShopController {
             currencyLabel.setText("Coins: " + currency);
         }
 
-        availableJokers = new ArrayList<>(JokerRegistry.JOKERS);
-        Collections.shuffle(availableJokers);
-        availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(3, availableJokers.size())));
+        GameSession session = GameSession.getInstance();
 
-        // Initialize tarots available in the shop
-        List<Tarot> allTarots = new ArrayList<>(TarotRegistry.TAROTS);
-        Collections.shuffle(allTarots);
-        availableTarots = new ArrayList<>(allTarots.subList(0, 3));
+        if (session.getCurrentShopJokers().isEmpty() || session.getCurrentShopTarots().isEmpty()) {
+            availableJokers = new ArrayList<>(JokerRegistry.JOKERS);
+            Collections.shuffle(availableJokers);
+            availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(4, availableJokers.size())));
+
+            List<Tarot> allTarots = new ArrayList<>(TarotRegistry.TAROTS);
+            Collections.shuffle(allTarots);
+            availableTarots = new ArrayList<>(allTarots.subList(0, Math.min(4, allTarots.size())));
+
+            session.getCurrentShopJokers().clear();
+            session.getCurrentShopJokers().addAll(availableJokers);
+            session.getCurrentShopTarots().clear();
+            session.getCurrentShopTarots().addAll(availableTarots);
+            session.saveRunToDatabase();
+        } else {
+            availableJokers = new ArrayList<>(session.getCurrentShopJokers());
+            availableTarots = new ArrayList<>(session.getCurrentShopTarots());
+        }
 
         if (shopSectionTitle != null) {
             shopSectionTitle.setText("Welcome to the Shop!");
@@ -65,12 +82,17 @@ public class ShopController {
             playNextRoundButton.setDisable(!PlayerDatabase.hasActiveRun());
         }
 
+        if (resetShopButton != null) {
+            resetShopButton.setDisable(GameSession.getInstance().isShopResetUsed());
+        }
+
         // Show jokers by default
         handleShowJokers(null);
     }
 
     @FXML
     private void handleShowJokers(ActionEvent event) {
+        currentTab = "jokers";
         if (shopSectionTitle != null) shopSectionTitle.setText("Joker Cards");
         selectedJoker = null;
         selectedTarot = null;
@@ -83,6 +105,15 @@ public class ShopController {
                 itemBox.setAlignment(javafx.geometry.Pos.CENTER);
                 itemBox.setSpacing(10);
                 itemBox.getStyleClass().add("card-view");
+
+                boolean owned = false;
+                for (Joker oj : GameSession.getInstance().getOwnedJokers()) {
+                    if (oj.name().equals(joker.name())) { owned = true; break; }
+                }
+                if (owned) {
+                    itemBox.setOpacity(0.4);
+                    itemBox.setDisable(true);
+                }
 
                 StackPane imageWrapper = new StackPane();
                 imageWrapper.getStyleClass().add("joker-image-wrapper");
@@ -139,6 +170,7 @@ public class ShopController {
 
     @FXML
     private void handleShowTarots(ActionEvent event) {
+        currentTab = "tarots";
         if (shopSectionTitle != null) shopSectionTitle.setText("Tarot Cards");
         selectedJoker = null;
         selectedTarot = null;
@@ -150,6 +182,15 @@ public class ShopController {
                 VBox itemBox = new VBox(10);
                 itemBox.setStyle("-fx-alignment: center; -fx-padding: 10px; -fx-cursor: hand;");
                 
+                boolean owned = false;
+                for (Tarot ot : GameSession.getInstance().getOwnedTarots()) {
+                    if (ot.name().equals(tarot.name())) { owned = true; break; }
+                }
+                if (owned) {
+                    itemBox.setOpacity(0.4);
+                    itemBox.setDisable(true);
+                }
+
                 StackPane imageWrapper = new StackPane();
                 imageWrapper.getStyleClass().add("joker-image-wrapper");
 
@@ -203,6 +244,59 @@ public class ShopController {
     }
 
     @FXML
+    private void handleShowVouchers(ActionEvent event) {
+        currentTab = "vouchers";
+        if (shopSectionTitle != null) shopSectionTitle.setText("Vouchers");
+        selectedJoker = null;
+        selectedTarot = null;
+        if (buyButton != null) buyButton.setVisible(false);
+        if (shopItemsContainer != null) {
+            shopItemsContainer.getChildren().clear();
+            Label emptyLabel = new Label("Vouchers Coming Soon...");
+            emptyLabel.setStyle("-fx-font-size: 32px; -fx-text-fill: white; -fx-font-weight: bold;");
+            shopItemsContainer.getChildren().add(emptyLabel);
+        }
+    }
+
+    @FXML
+    private void handleResetShop(ActionEvent event) {
+        GameSession session = GameSession.getInstance();
+        if (session.getCoins() >= 50 && !session.isShopResetUsed()) {
+            session.deductCoins(50);
+            session.setShopResetUsed(true);
+            if (currencyLabel != null) {
+                currencyLabel.setText("Coins: " + session.getCoins());
+            }
+            if (resetShopButton != null) {
+                resetShopButton.setDisable(true);
+            }
+
+            availableJokers = new ArrayList<>(JokerRegistry.JOKERS);
+            Collections.shuffle(availableJokers);
+            availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(4, availableJokers.size())));
+
+            List<Tarot> allTarots = new ArrayList<>(TarotRegistry.TAROTS);
+            Collections.shuffle(allTarots);
+            availableTarots = new ArrayList<>(allTarots.subList(0, Math.min(4, allTarots.size())));
+
+            session.getCurrentShopJokers().clear();
+            session.getCurrentShopJokers().addAll(availableJokers);
+            session.getCurrentShopTarots().clear();
+            session.getCurrentShopTarots().addAll(availableTarots);
+
+            session.saveRunToDatabase();
+
+            if (currentTab.equals("jokers")) handleShowJokers(null);
+            else if (currentTab.equals("tarots")) handleShowTarots(null);
+            else handleShowVouchers(null);
+        } else if (session.getCoins() < 50 && !session.isShopResetUsed()) {
+            if (resetShopButton != null) {
+                resetShopButton.setText("Not enough Coins!");
+            }
+        }
+    }
+
+    @FXML
     private void handleBuyItem(ActionEvent event) {
         if (selectedJoker != null || selectedTarot != null) {
             GameSession session = GameSession.getInstance();
@@ -217,13 +311,11 @@ public class ShopController {
                 if (selectedJoker != null) {
                     session.getOwnedJokers().add(selectedJoker);
                     session.getActiveJokers().add(selectedJoker);
-                    availableJokers.remove(selectedJoker);
                     selectedJoker = null;
                     if (buyButton != null) buyButton.setVisible(false);
                     handleShowJokers(null);
                 } else if (selectedTarot != null) {
                     session.getOwnedTarots().add(selectedTarot);
-                    availableTarots.remove(selectedTarot);
                     selectedTarot = null;
                     if (buyButton != null) buyButton.setVisible(false);
                     handleShowTarots(null);

@@ -23,11 +23,13 @@
                     <VBox alignment="CENTER" spacing="15.0" styleClass="panel-section" VBox.vgrow="ALWAYS">
                         <Button onAction="#handleShowJokers" styleClass="menu-button, btn-settings" text="Joker Cards" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                         <Button onAction="#handleShowTarots" styleClass="menu-button, btn-play" text="Tarot Cards" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
+                        <Button onAction="#handleShowVouchers" styleClass="menu-button" text="Vouchers" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #6a0dad;" />
                     </VBox>
 
                     <Region VBox.vgrow="ALWAYS" />
 
                     <VBox spacing="15.0" alignment="CENTER" styleClass="panel-section">
+                        <Button fx:id="resetShopButton" onAction="#handleResetShop" styleClass="menu-button" text="Reset Shop (50 Coins)" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #ff4500;" />
                         <Button fx:id="playNextRoundButton" onAction="#handlePlayNextRound" styleClass="menu-button, btn-play" text="Play Next Round" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                         <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="Main Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                     </VBox>

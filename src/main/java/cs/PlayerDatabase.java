@@ -20,15 +20,18 @@ public class PlayerDatabase {
                     return new PlayerData();
                 }
                 return data;
-            } catch (IOException e) {
+            } catch (IOException | com.google.gson.JsonSyntaxException e) {
                 e.printStackTrace();
+                System.err.println("Corrupted save file detected. Re-initializing save data.");
+                PlayerData defaultData = new PlayerData();
+                saveData(defaultData);
+                return defaultData;
             }
         } else {
             PlayerData defaultData = new PlayerData();
             saveData(defaultData);
             return defaultData;
         }
-        return new PlayerData();
     }
 
     public static void saveData(PlayerData data) {

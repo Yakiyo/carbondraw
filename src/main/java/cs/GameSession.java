@@ -20,7 +20,10 @@ public class GameSession {
     private List<Joker> activeJokers = new ArrayList<>();
     private List<Tarot> ownedTarots = new ArrayList<>();
     private List<Card> currentDeck = new ArrayList<>();
+    private List<Joker> currentShopJokers = new ArrayList<>();
+    private List<Tarot> currentShopTarots = new ArrayList<>();
     private int coins;
+    private boolean shopResetUsed;
 
     private GameSession() {}
 
@@ -44,7 +47,10 @@ public class GameSession {
         this.activeJokers.clear();
         this.ownedTarots.clear();
         this.currentDeck = new ArrayList<>(CardData.CARDS); // Copy initial deck
+        this.currentShopJokers.clear();
+        this.currentShopTarots.clear();
         this.coins = 0;
+        this.shopResetUsed = false;
         
         // Save the run immediately so it can be continued later
         saveRunToDatabase();
@@ -65,6 +71,7 @@ public class GameSession {
         this.targetPoints = runData.getTargetPoints();
         this.currentScore = 0;
         this.coins = runData.getCoins();
+        this.shopResetUsed = runData.isShopResetUsed();
 
         // Restore owned jokers
         this.ownedJokers.clear();
@@ -95,6 +102,21 @@ public class GameSession {
         if (runData.getDeck() != null) {
             for (PlayerData.CardData cd : runData.getDeck()) {
                 this.currentDeck.add(cardFromData(cd));
+            }
+        }
+
+        // Restore shop inventory
+        this.currentShopJokers.clear();
+        if (runData.getShopJokers() != null) {
+            for (PlayerData.JokerData jd : runData.getShopJokers()) {
+                this.currentShopJokers.add(jokerFromData(jd));
+            }
+        }
+        
+        this.currentShopTarots.clear();
+        if (runData.getShopTarots() != null) {
+            for (PlayerData.TarotData td : runData.getShopTarots()) {
+                this.currentShopTarots.add(tarotFromData(td));
             }
         }
 
@@ -162,10 +184,15 @@ public class GameSession {
             .map(this::dataFromTarot).collect(Collectors.toList());
         List<PlayerData.CardData> deckData = currentDeck.stream()
             .map(this::dataFromCard).collect(Collectors.toList());
+        List<PlayerData.JokerData> shopJokersData = currentShopJokers.stream()
+            .map(this::dataFromJoker).collect(Collectors.toList());
+        List<PlayerData.TarotData> shopTarotsData = currentShopTarots.stream()
+            .map(this::dataFromTarot).collect(Collectors.toList());
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, deckData, coins
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, deckData, 
+            shopJokersData, shopTarotsData, coins, shopResetUsed
         );
         PlayerDatabase.saveRun(runData);
     }
@@ -180,6 +207,9 @@ public class GameSession {
         currentAnte++;
         targetPoints = (int) Math.round(baseTargetScore * Math.pow(difficultyMultiplier, currentAnte - 1));
         currentScore = 0;
+        shopResetUsed = false;
+        currentShopJokers.clear();
+        currentShopTarots.clear();
         
         saveRunToDatabase();
         return true;
@@ -221,4 +251,8 @@ public class GameSession {
     public List<Joker> getActiveJokers() { return activeJokers; }
     public List<Tarot> getOwnedTarots() { return ownedTarots; }
     public List<Card> getCurrentDeck() { return currentDeck; }
+    public List<Joker> getCurrentShopJokers() { return currentShopJokers; }
+    public List<Tarot> getCurrentShopTarots() { return currentShopTarots; }
+    public boolean isShopResetUsed() { return shopResetUsed; }
+    public void setShopResetUsed(boolean shopResetUsed) { this.shopResetUsed = shopResetUsed; }
 }

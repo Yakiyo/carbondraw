@@ -27,21 +27,29 @@ public class PlayerData {
         private List<JokerData> activeJokers;
         private List<TarotData> ownedTarots;
         private List<CardData> deck;
+        private List<JokerData> shopJokers;
+        private List<TarotData> shopTarots;
 
         private int coins;
+        private boolean shopResetUsed;
 
         public RunData() {
             this.ownedJokers = new ArrayList<>();
             this.activeJokers = new ArrayList<>();
             this.ownedTarots = new ArrayList<>();
             this.deck = new ArrayList<>();
+            this.shopJokers = new ArrayList<>();
+            this.shopTarots = new ArrayList<>();
             this.coins = 0;
+            this.shopResetUsed = false;
         }
 
         public RunData(String difficulty, double difficultyMultiplier, int currentAnte,
                        int maxAntes, int baseTargetScore, int targetPoints,
                        List<JokerData> ownedJokers, List<JokerData> activeJokers, 
-                       List<TarotData> ownedTarots, List<CardData> deck, int coins) {
+                       List<TarotData> ownedTarots, List<CardData> deck, 
+                       List<JokerData> shopJokers, List<TarotData> shopTarots, 
+                       int coins, boolean shopResetUsed) {
             this.difficulty = difficulty;
             this.difficultyMultiplier = difficultyMultiplier;
             this.currentAnte = currentAnte;
@@ -52,7 +60,10 @@ public class PlayerData {
             this.activeJokers = activeJokers != null ? activeJokers : new ArrayList<>();
             this.ownedTarots = ownedTarots != null ? ownedTarots : new ArrayList<>();
             this.deck = deck != null ? deck : new ArrayList<>();
+            this.shopJokers = shopJokers != null ? shopJokers : new ArrayList<>();
+            this.shopTarots = shopTarots != null ? shopTarots : new ArrayList<>();
             this.coins = coins;
+            this.shopResetUsed = shopResetUsed;
         }
 
         public String getDifficulty() { return difficulty; }
@@ -65,7 +76,10 @@ public class PlayerData {
         public List<JokerData> getActiveJokers() { return activeJokers; }
         public List<TarotData> getOwnedTarots() { return ownedTarots; }
         public List<CardData> getDeck() { return deck; }
+        public List<JokerData> getShopJokers() { return shopJokers; }
+        public List<TarotData> getShopTarots() { return shopTarots; }
         public int getCoins() { return coins; }
+        public boolean isShopResetUsed() { return shopResetUsed; }
     }
 
     /**
