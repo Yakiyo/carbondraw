@@ -71,7 +71,9 @@
                         <HBox fx:id="jokersContainer" alignment="CENTER_LEFT" spacing="15.0" prefWidth="380.0" maxWidth="380.0" minWidth="380.0" styleClass="card-slot-container" />
                         
                         <!-- Tarot Cards Area (Placeholder) -->
-                        <HBox fx:id="tarotsContainer" alignment="CENTER_LEFT" spacing="15.0" styleClass="card-slot-container" HBox.hgrow="ALWAYS" />
+                        <HBox fx:id="tarotsContainer" alignment="CENTER" HBox.hgrow="ALWAYS" spacing="15.0" styleClass="card-slot-container" />
+                        
+                        <Button fx:id="useTarotButton" text="Use Breakthrough" onAction="#handleUseTarot" visible="false" style="-fx-font-size: 16px; -fx-background-color: #fca311; -fx-text-fill: #14213d; -fx-font-weight: bold; -fx-padding: 10px 20px; -fx-background-radius: 5px;"/>
                     </HBox>
                 </top>
                 

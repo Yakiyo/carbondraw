@@ -28,6 +28,7 @@
                     <Region VBox.vgrow="ALWAYS" />
 
                     <VBox spacing="15.0" alignment="CENTER" styleClass="panel-section">
+                        <Button fx:id="playNextRoundButton" onAction="#handlePlayNextRound" styleClass="menu-button, btn-play" text="Play Next Round" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                         <Button onAction="#handleReturnHome" styleClass="menu-button, btn-exit" text="Main Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px;" />
                     </VBox>
                 </VBox>

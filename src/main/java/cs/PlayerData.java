@@ -26,6 +26,7 @@ public class PlayerData {
         private List<JokerData> ownedJokers;
         private List<JokerData> activeJokers;
         private List<TarotData> ownedTarots;
+        private List<CardData> deck;
 
         private int coins;
 
@@ -33,13 +34,14 @@ public class PlayerData {
             this.ownedJokers = new ArrayList<>();
             this.activeJokers = new ArrayList<>();
             this.ownedTarots = new ArrayList<>();
+            this.deck = new ArrayList<>();
             this.coins = 0;
         }
 
         public RunData(String difficulty, double difficultyMultiplier, int currentAnte,
                        int maxAntes, int baseTargetScore, int targetPoints,
                        List<JokerData> ownedJokers, List<JokerData> activeJokers, 
-                       List<TarotData> ownedTarots, int coins) {
+                       List<TarotData> ownedTarots, List<CardData> deck, int coins) {
             this.difficulty = difficulty;
             this.difficultyMultiplier = difficultyMultiplier;
             this.currentAnte = currentAnte;
@@ -49,6 +51,7 @@ public class PlayerData {
             this.ownedJokers = ownedJokers != null ? ownedJokers : new ArrayList<>();
             this.activeJokers = activeJokers != null ? activeJokers : new ArrayList<>();
             this.ownedTarots = ownedTarots != null ? ownedTarots : new ArrayList<>();
+            this.deck = deck != null ? deck : new ArrayList<>();
             this.coins = coins;
         }
 
@@ -61,6 +64,7 @@ public class PlayerData {
         public List<JokerData> getOwnedJokers() { return ownedJokers; }
         public List<JokerData> getActiveJokers() { return activeJokers; }
         public List<TarotData> getOwnedTarots() { return ownedTarots; }
+        public List<CardData> getDeck() { return deck; }
         public int getCoins() { return coins; }
     }
 
@@ -116,5 +120,32 @@ public class PlayerData {
         public String getImagePath() { return imagePath; }
         public String getEffectType() { return effectType; }
         public int getTargetCount() { return targetCount; }
+    }
+
+    /**
+     * Serializable representation of a Card for JSON storage.
+     */
+    public static class CardData {
+        private String name;
+        private String category;
+        private String imagePath;
+        private int points;
+        private String enhancement;
+
+        public CardData() {}
+
+        public CardData(String name, String category, String imagePath, int points, String enhancement) {
+            this.name = name;
+            this.category = category;
+            this.imagePath = imagePath;
+            this.points = points;
+            this.enhancement = enhancement;
+        }
+
+        public String getName() { return name; }
+        public String getCategory() { return category; }
+        public String getImagePath() { return imagePath; }
+        public int getPoints() { return points; }
+        public String getEnhancement() { return enhancement; }
     }
 }

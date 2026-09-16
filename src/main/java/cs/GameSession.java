@@ -19,6 +19,7 @@ public class GameSession {
     private List<Joker> ownedJokers = new ArrayList<>();
     private List<Joker> activeJokers = new ArrayList<>();
     private List<Tarot> ownedTarots = new ArrayList<>();
+    private List<Card> currentDeck = new ArrayList<>();
     private int coins;
 
     private GameSession() {}
@@ -42,6 +43,7 @@ public class GameSession {
         this.ownedJokers.clear();
         this.activeJokers.clear();
         this.ownedTarots.clear();
+        this.currentDeck = new ArrayList<>(CardData.CARDS); // Copy initial deck
         this.coins = 0;
         
         // Save the run immediately so it can be continued later
@@ -88,6 +90,14 @@ public class GameSession {
             }
         }
 
+        // Restore deck
+        this.currentDeck.clear();
+        if (runData.getDeck() != null) {
+            for (PlayerData.CardData cd : runData.getDeck()) {
+                this.currentDeck.add(cardFromData(cd));
+            }
+        }
+
         return true;
     }
 
@@ -106,16 +116,34 @@ public class GameSession {
     }
 
     private Tarot tarotFromData(PlayerData.TarotData td) {
-        return new Tarot(
-            td.getName(), td.getDescription(), td.getImagePath(),
-            Tarot.TarotEffect.valueOf(td.getEffectType()), td.getTargetCount()
-        );
+        return TarotRegistry.TAROTS.stream()
+            .filter(t -> t.name().equals(td.getName()))
+            .findFirst()
+            .orElseGet(() -> new Tarot(
+                td.getName(), td.getDescription(), td.getImagePath(),
+                Tarot.TarotEffect.valueOf(td.getEffectType()), td.getTargetCount()
+            ));
     }
 
     private PlayerData.TarotData dataFromTarot(Tarot t) {
         return new PlayerData.TarotData(
             t.name(), t.description(), t.imagePath(),
             t.effectType().name(), t.targetCount()
+        );
+    }
+
+    private Card cardFromData(PlayerData.CardData cd) {
+        Card.Enhancement enhancement = cd.getEnhancement() != null ? 
+            Card.Enhancement.valueOf(cd.getEnhancement()) : Card.Enhancement.NONE;
+        return new Card(
+            cd.getName(), cd.getCategory(), cd.getImagePath(), cd.getPoints(), enhancement
+        );
+    }
+
+    private PlayerData.CardData dataFromCard(Card c) {
+        return new PlayerData.CardData(
+            c.name(), c.category(), c.imagePath(), c.points(), 
+            c.enhancement() != null ? c.enhancement().name() : Card.Enhancement.NONE.name()
         );
     }
 
@@ -129,10 +157,12 @@ public class GameSession {
             .map(this::dataFromJoker).collect(Collectors.toList());
         List<PlayerData.TarotData> tarotData = ownedTarots.stream()
             .map(this::dataFromTarot).collect(Collectors.toList());
+        List<PlayerData.CardData> deckData = currentDeck.stream()
+            .map(this::dataFromCard).collect(Collectors.toList());
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, coins
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, deckData, coins
         );
         PlayerDatabase.saveRun(runData);
     }
@@ -160,6 +190,7 @@ public class GameSession {
         this.ownedJokers.clear();
         this.activeJokers.clear();
         this.ownedTarots.clear();
+        this.currentDeck.clear();
         
         PlayerDatabase.clearRun();
     }
@@ -186,4 +217,5 @@ public class GameSession {
     public List<Joker> getOwnedJokers() { return ownedJokers; }
     public List<Joker> getActiveJokers() { return activeJokers; }
     public List<Tarot> getOwnedTarots() { return ownedTarots; }
+    public List<Card> getCurrentDeck() { return currentDeck; }
 }

@@ -34,6 +34,11 @@ public class GameController {
     private javafx.scene.layout.HBox tarotsContainer;
 
     @FXML
+    private javafx.scene.control.Button useTarotButton;
+    
+    private Tarot selectedTarot = null;
+
+    @FXML
     private javafx.scene.layout.AnchorPane handsPopup;
 
     @FXML
@@ -110,8 +115,8 @@ public class GameController {
                 session.getDifficulty(), targetScore));
         }
 
-        // Deal 10 random cards
-        remainingDeck = new ArrayList<>(CardData.CARDS);
+        // Deal 10 random cards from the persistent deck
+        remainingDeck = new ArrayList<>(session.getCurrentDeck());
         Collections.shuffle(remainingDeck);
         currentHand = new ArrayList<>();
         for (int i = 0; i < 10 && !remainingDeck.isEmpty(); i++) {
@@ -129,6 +134,7 @@ public class GameController {
         if (gameOverPopup != null) gameOverPopup.setVisible(false);
 
         renderJokers(session.getActiveJokers());
+        renderTarots(session.getOwnedTarots());
         renderCards(currentHand);
     }
 
@@ -141,7 +147,7 @@ public class GameController {
             imageWrapper.getStyleClass().add("joker-image-wrapper");
 
             try {
-                Image img = new Image(getClass().getResourceAsStream(joker.imagePath()));
+                Image img = new Image(getClass().getResource(joker.imagePath()).toExternalForm());
                 ImageView imgView = new ImageView(img);
                 imgView.setFitWidth(100);
                 imgView.setFitHeight(145);
@@ -170,6 +176,58 @@ public class GameController {
         }
     }
 
+    private void renderTarots(List<Tarot> tarots) {
+        if (tarotsContainer == null) return;
+        tarotsContainer.getChildren().clear();
+
+        for (Tarot tarot : tarots) {
+            StackPane imageWrapper = new StackPane();
+            imageWrapper.getStyleClass().add("joker-image-wrapper"); // same styling as joker
+
+            try {
+                Image img = new Image(getClass().getResource(tarot.imagePath()).toExternalForm());
+                ImageView imgView = new ImageView(img);
+                imgView.setFitWidth(100);
+                imgView.setFitHeight(145);
+                imgView.setPreserveRatio(false);
+
+                Rectangle clip = new Rectangle(100, 145);
+                clip.setArcWidth(10);
+                clip.setArcHeight(10);
+                imgView.setClip(clip);
+
+                imageWrapper.getChildren().add(imgView);
+            } catch (Exception e) {
+                System.err.println("Could not load tarot image: " + tarot.imagePath());
+                Label errorLabel = new Label(tarot.name());
+                errorLabel.setStyle("-fx-text-fill: white; -fx-padding: 10px;");
+                imageWrapper.getChildren().add(errorLabel);
+                imageWrapper.setPrefSize(100, 145);
+            }
+
+            Tooltip tooltip = new Tooltip(tarot.name() + "\n" + tarot.description());
+            tooltip.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+            tooltip.setShowDelay(Duration.millis(100));
+            Tooltip.install(imageWrapper, tooltip);
+            
+            imageWrapper.setOnMouseClicked(e -> {
+                for (javafx.scene.Node node : tarotsContainer.getChildren()) {
+                    node.setStyle(""); // Clear selection
+                }
+                if (selectedTarot == tarot) {
+                    selectedTarot = null; // Deselect
+                    if (useTarotButton != null) useTarotButton.setVisible(false);
+                } else {
+                    imageWrapper.setStyle("-fx-border-color: #fca311; -fx-border-width: 3px; -fx-border-radius: 10px;");
+                    selectedTarot = tarot;
+                    updateTarotButtonState();
+                }
+            });
+
+            tarotsContainer.getChildren().add(imageWrapper);
+        }
+    }
+
     private void renderCards(List<Card> cards) {
         if (cardHandContainer == null) return;
         
@@ -194,7 +252,7 @@ public class GameController {
             imageWrapper.getStyleClass().add("card-image-wrapper");
 
             try {
-                Image img = new Image(getClass().getResourceAsStream("/cs/" + card.imagePath()));
+                Image img = new Image(getClass().getResource("/cs/" + card.imagePath()).toExternalForm());
                 ImageView imgView = new ImageView(img);
                 imgView.setFitWidth(cardWidth);
                 imgView.setFitHeight(cardHeight);
@@ -245,6 +303,7 @@ public class GameController {
                     }
                 }
                 updateHandInfoDisplay();
+                updateTarotButtonState();
             });
 
             cardHandContainer.getChildren().add(cardView);
@@ -316,10 +375,35 @@ public class GameController {
         HandResult bestHand = HandEvaluator.evaluateSelectedCards(selectedCards);
         if (bestHand != null) {
             int baseChips = 0;
+            int mult = bestHand.mult();
+            List<Card> cardsToDestroy = new ArrayList<>();
+
             for (Card c : bestHand.cardsUsed()) {
                 baseChips += c.points();
+                if (c.enhancement() == Card.Enhancement.MULT) {
+                    mult += 4;
+                } else if (c.enhancement() == Card.Enhancement.BONUS) {
+                    baseChips += 30;
+                } else if (c.enhancement() == Card.Enhancement.GLASS) {
+                    mult *= 2;
+                    if (Math.random() < 0.25) { // 1 in 4 chance to break
+                        cardsToDestroy.add(c);
+                    }
+                }
+                // LUCKY could be handled here too: 1 in 5 chance +20 mult, 1 in 15 chance $20
+                if (c.enhancement() == Card.Enhancement.LUCKY) {
+                    if (Math.random() < 0.2) mult += 20;
+                    if (Math.random() < 0.066) GameSession.getInstance().addCoins(20);
+                }
             }
-            int[] calculated = calculateScoreWithJokers(baseChips, bestHand.mult());
+
+            for (Card held : currentHand) {
+                if (!selectedCards.contains(held) && held.enhancement() == Card.Enhancement.STEEL) {
+                    mult = (int) Math.round(mult * 1.5);
+                }
+            }
+
+            int[] calculated = calculateScoreWithJokers(baseChips, mult);
             int pointsEarned = calculated[0] * calculated[1];
             currentScore += pointsEarned;
             
@@ -334,6 +418,11 @@ public class GameController {
                     currentHand.set(index, remainingDeck.remove(0));
                 } else if (index != -1) {
                     currentHand.remove(index);
+                }
+
+                // If glass broke, remove it permanently from the session deck
+                if (cardsToDestroy.contains(playedCard)) {
+                    GameSession.getInstance().getCurrentDeck().remove(playedCard);
                 }
             }
 
@@ -441,6 +530,119 @@ public class GameController {
         // Update UI
         renderCards(currentHand);
         updateHandInfoDisplay();
+    }
+
+    private void updateTarotButtonState() {
+        if (useTarotButton == null) return;
+        
+        if (selectedTarot == null) {
+            useTarotButton.setVisible(false);
+            return;
+        }
+
+        // Check if the condition for using the Tarot is met
+        int requiredTargets = selectedTarot.targetCount();
+        if (requiredTargets > 0) {
+            if (selectedCards.size() == requiredTargets) {
+                useTarotButton.setVisible(true);
+            } else {
+                useTarotButton.setVisible(false);
+            }
+        } else {
+            useTarotButton.setVisible(true);
+        }
+    }
+
+    @FXML
+    private void handleUseTarot(ActionEvent event) {
+        if (selectedTarot == null) return;
+
+        GameSession session = GameSession.getInstance();
+        boolean used = false;
+
+        switch (selectedTarot.effectType()) {
+            case GAIN_MONEY:
+                int currentCoins = session.getCoins();
+                int gain = Math.min(currentCoins, 20);
+                if (gain == 0 && currentCoins == 0) gain = 5; // Give at least 5 if broke
+                session.addCoins(gain);
+                used = true;
+                break;
+
+            case ENHANCE_CHIPS:
+                for (Card c : selectedCards) c.setEnhancement(Card.Enhancement.BONUS);
+                used = true;
+                break;
+
+            case ENHANCE_MULTI:
+                for (Card c : selectedCards) c.setEnhancement(Card.Enhancement.MULT);
+                used = true;
+                break;
+
+            case ENHANCE_LUCKY:
+                for (Card c : selectedCards) c.setEnhancement(Card.Enhancement.LUCKY);
+                used = true;
+                break;
+
+            case ENHANCE_WILD:
+                for (Card c : selectedCards) c.setEnhancement(Card.Enhancement.WILD);
+                used = true;
+                break;
+
+            case ENHANCE_STEEL:
+                for (Card c : selectedCards) c.setEnhancement(Card.Enhancement.STEEL);
+                used = true;
+                break;
+
+            case ENHANCE_GLASS:
+                for (Card c : selectedCards) c.setEnhancement(Card.Enhancement.GLASS);
+                used = true;
+                break;
+
+            case DESTROY_CARD:
+                for (Card c : selectedCards) {
+                    currentHand.remove(c);
+                    session.getCurrentDeck().remove(c);
+                }
+                used = true;
+                break;
+
+            case SPAWN_JOKER:
+                if (session.getActiveJokers().size() < 5) {
+                    List<Joker> jokers = new ArrayList<>(List.of(
+                        new Joker("Basic Joker", "Adds +20 Chips", "/cs/images/joker/joker_1.jpg", Joker.JokerEffect.ADD_CHIPS, 20),
+                        new Joker("Multi Joker", "Adds +4 Mult", "/cs/images/joker/joker_2.jpg", Joker.JokerEffect.ADD_MULTI, 4),
+                        new Joker("Foil Joker", "Multiplies Mult by 2", "/cs/images/joker/joker_3.jpg", Joker.JokerEffect.MULT_MULTI, 2)
+                    ));
+                    Collections.shuffle(jokers);
+                    session.getActiveJokers().add(jokers.get(0));
+                    session.getOwnedJokers().add(jokers.get(0));
+                    used = true;
+                }
+                break;
+
+            case SPAWN_TAROT:
+                if (session.getOwnedTarots().size() < 2) {
+                    List<Tarot> tarots = new ArrayList<>(TarotRegistry.TAROTS);
+                    Collections.shuffle(tarots);
+                    session.getOwnedTarots().add(tarots.get(0));
+                    used = true;
+                }
+                break;
+        }
+
+        if (used) {
+            session.getOwnedTarots().remove(selectedTarot);
+            selectedTarot = null;
+            selectedCards.clear();
+            session.saveRunToDatabase();
+            
+            // Re-render everything
+            renderTarots(session.getOwnedTarots());
+            renderJokers(session.getActiveJokers());
+            renderCards(currentHand);
+            updateTarotButtonState();
+        }
     }
 
     private void updateHandInfoDisplay() {

@@ -8,10 +8,15 @@ public record Tarot(
     int targetCount
 ) {
     public enum TarotEffect {
+        GAIN_MONEY,
         ENHANCE_CHIPS,
         ENHANCE_MULTI,
-        CHANGE_SUIT,
-        GAIN_MONEY,
-        DESTROY_CARD
+        ENHANCE_LUCKY,
+        ENHANCE_WILD,
+        ENHANCE_STEEL,
+        ENHANCE_GLASS,
+        DESTROY_CARD,
+        SPAWN_JOKER,
+        SPAWN_TAROT
     }
 }

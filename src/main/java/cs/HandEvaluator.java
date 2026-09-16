@@ -110,9 +110,13 @@ public class HandEvaluator {
             if (policyCount == 5 && distinctTiers == 1) return new HandResult("Bureaucratic Gridlock", 0, cards);
         }
 
-        Map<String, Long> suitCounts = cards.stream().collect(Collectors.groupingBy(c -> c.getSuit() == null ? "" : c.getSuit(), Collectors.counting()));
+        Map<String, Long> suitCounts = cards.stream()
+            .filter(c -> c.enhancement() != Card.Enhancement.WILD)
+            .collect(Collectors.groupingBy(c -> c.getOriginalSuit() == null ? "" : c.getOriginalSuit(), Collectors.counting()));
+        long wildCount = cards.stream().filter(c -> c.enhancement() == Card.Enhancement.WILD).count();
+        
         List<Long> sortedCounts = suitCounts.values().stream().sorted(Collections.reverseOrder()).collect(Collectors.toList());
-        long max = sortedCounts.isEmpty() ? 0 : sortedCounts.get(0);
+        long max = (sortedCounts.isEmpty() ? 0 : sortedCounts.get(0)) + wildCount;
         long second = sortedCounts.size() > 1 ? sortedCounts.get(1) : 0;
 
         boolean isSequential = false;
@@ -141,7 +145,8 @@ public class HandEvaluator {
     }
 
     private static boolean isSuit(Card c, String target) {
-        return c.getSuit() != null && c.getSuit().toLowerCase().contains(target.toLowerCase());
+        if (c.enhancement() == Card.Enhancement.WILD) return true;
+        return c.getOriginalSuit() != null && c.getOriginalSuit().toLowerCase().contains(target.toLowerCase());
     }
 
     private static int getPriority(String handName) {

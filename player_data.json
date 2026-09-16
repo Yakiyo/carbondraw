@@ -1,1 +1,156 @@
-{}
+{
+  "activeRun": {
+    "difficulty": "EASY",
+    "difficultyMultiplier": 1.5,
+    "currentAnte": 1,
+    "maxAntes": 10,
+    "baseTargetScore": 1000,
+    "targetPoints": 1000,
+    "ownedJokers": [],
+    "activeJokers": [],
+    "ownedTarots": [],
+    "deck": [
+      {
+        "name": "Kelp Forest",
+        "category": "biosphere",
+        "imagePath": "images/biosphere/kelp_forest.jpg",
+        "points": 40,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Mangrove Restoration",
+        "category": "biosphere",
+        "imagePath": "images/biosphere/mangrove_restoration.jpg",
+        "points": 50,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Old Growth Protection",
+        "category": "biosphere",
+        "imagePath": "images/biosphere/old_growth_protection.jpg",
+        "points": 65,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Peat Bog Revival",
+        "category": "biosphere",
+        "imagePath": "images/biosphere/peat_bog_revival.jpg",
+        "points": 45,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Soil Microbiome",
+        "category": "biosphere",
+        "imagePath": "images/biosphere/soil_microbiome.jpg",
+        "points": 30,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Geothermal Tap",
+        "category": "renewable",
+        "imagePath": "images/renewable/geothermal_tap.jpg",
+        "points": 55,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Offshore Wind",
+        "category": "renewable",
+        "imagePath": "images/renewable/offshore_wind.jpg",
+        "points": 70,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Solar",
+        "category": "renewable",
+        "imagePath": "images/renewable/solar.jpg",
+        "points": 35,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "SSD",
+        "category": "renewable",
+        "imagePath": "images/renewable/ssd.jpg",
+        "points": 80,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Tidal Generator",
+        "category": "renewable",
+        "imagePath": "images/renewable/tidal_generator.jpg",
+        "points": 60,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Algae Biofuel",
+        "category": "green_tech",
+        "imagePath": "images/green_tech/algae_biofuel.jpg",
+        "points": 55,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Carbon Cured Concrete",
+        "category": "green_tech",
+        "imagePath": "images/green_tech/carbon_cured_concrete.jpg",
+        "points": 60,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Direct Air Capture",
+        "category": "green_tech",
+        "imagePath": "images/green_tech/direct_air_capture.jpg",
+        "points": 85,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Green Hydrogen",
+        "category": "green_tech",
+        "imagePath": "images/green_tech/green_hydrogen.jpg",
+        "points": 70,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Smart Grid AI",
+        "category": "green_tech",
+        "imagePath": "images/green_tech/smart_grid_ai.jpg",
+        "points": 50,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Carbon Dividend",
+        "category": "policy_and_society",
+        "imagePath": "images/policy_and_society/carbon_dividend.jpg",
+        "points": 75,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Climate Treaty",
+        "category": "policy_and_society",
+        "imagePath": "images/policy_and_society/climate_treaty.jpg",
+        "points": 90,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Emission Cap",
+        "category": "policy_and_society",
+        "imagePath": "images/policy_and_society/emission_cap.jpg",
+        "points": 50,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Green Urbanism",
+        "category": "policy_and_society",
+        "imagePath": "images/policy_and_society/green_urbanism.jpg",
+        "points": 45,
+        "enhancement": "NONE"
+      },
+      {
+        "name": "Public Transit",
+        "category": "policy_and_society",
+        "imagePath": "images/policy_and_society/public_transit.jpg",
+        "points": 60,
+        "enhancement": "NONE"
+      }
+    ],
+    "coins": 0
+  }
+}
