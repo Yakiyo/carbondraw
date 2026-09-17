@@ -49,14 +49,23 @@ public class App extends Application {
         }
     }
 
-    public static void toggleBackgroundMusic() {
+    private static boolean isMuted = false;
+
+    public static boolean toggleBackgroundMusic() {
         if (bgMediaPlayer != null) {
-            if (bgMediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-                bgMediaPlayer.pause();
-            } else {
+            if (isMuted) {
                 bgMediaPlayer.play();
+                isMuted = false;
+            } else {
+                bgMediaPlayer.pause();
+                isMuted = true;
             }
         }
+        return isMuted;
+    }
+
+    public static boolean isMusicMuted() {
+        return isMuted;
     }
 
     public static void setRoot(String fxml) throws IOException {

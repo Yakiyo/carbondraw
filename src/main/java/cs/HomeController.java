@@ -27,6 +27,9 @@ public class HomeController {
     private Button deckButton;
 
     @FXML
+    private Button musicToggleButton;
+
+    @FXML
     private Button exitButton;
 
     @FXML
@@ -36,6 +39,9 @@ public class HomeController {
         }
         if (currencyLabel != null) {
             currencyLabel.setText("Coins: " + GameSession.getInstance().getCoins());
+        }
+        if (musicToggleButton != null) {
+            musicToggleButton.setText(App.isMusicMuted() ? "🔇" : "🔊");
         }
     }
 
@@ -75,6 +81,9 @@ public class HomeController {
 
     @FXML
     private void handleToggleMusic(ActionEvent event) {
-        App.toggleBackgroundMusic();
+        boolean isMuted = App.toggleBackgroundMusic();
+        if (musicToggleButton != null) {
+            musicToggleButton.setText(isMuted ? "🔇" : "🔊");
+        }
     }
 }
