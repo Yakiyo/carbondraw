@@ -13,6 +13,9 @@
 
 <AnchorPane styleClass="root-pane" stylesheets="@home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs.GameController" prefWidth="1920.0" prefHeight="1000.0">
     <children>
+        <!-- Background Animation Layer -->
+        <Pane fx:id="backgroundAnimationPane" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" style="-fx-overflow: hidden;" />
+
         <!-- Main Layout Split -->
         <HBox AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             
