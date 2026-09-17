@@ -220,10 +220,7 @@
 .card-view:hover .card-image-wrapper {
     -fx-border-color: white;
 }
-.card-view:hover {
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-}
+
 
 /* Card Slot Containers */
 .card-slot-container {
