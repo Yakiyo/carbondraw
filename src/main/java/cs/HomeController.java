@@ -74,6 +74,15 @@ public class HomeController {
     }
 
     @FXML
+    private void handleOpenHelp(ActionEvent event) {
+        try {
+            App.setRoot("help");
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     private void handleExit(ActionEvent event) {
         // Gracefully close the JavaFX application
         Platform.exit();
