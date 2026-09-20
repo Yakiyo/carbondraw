@@ -162,9 +162,11 @@ public class ShopController {
             // Click to select
             itemBox.setOnMouseClicked(e -> {
                 for (javafx.scene.Node node : shopItemsContainer.getChildren()) {
-                    node.setStyle(""); // Clear selection border
+                    node.setScaleX(1.0);
+                    node.setScaleY(1.0);
                 }
-                itemBox.setStyle("-fx-border-color: #fca311; -fx-border-width: 4px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+                itemBox.setScaleX(1.1);
+                itemBox.setScaleY(1.1);
                 selectedJoker = joker;
                 
                 if (buyButton != null) {
@@ -191,7 +193,7 @@ public class ShopController {
     @FXML
     private void handleShowTarots(ActionEvent event) {
         currentTab = "tarots";
-        if (shopSectionTitle != null) shopSectionTitle.setText("Tarot Cards");
+        if (shopSectionTitle != null) shopSectionTitle.setText("Breakthroughs");
         selectedJoker = null;
         selectedTarot = null;
         selectedVoucher = null;
@@ -240,9 +242,11 @@ public class ShopController {
 
                 itemBox.setOnMouseClicked(e -> {
                     for (javafx.scene.Node node : shopItemsContainer.getChildren()) {
-                        node.setStyle(""); // Clear selection border
+                        node.setScaleX(1.0);
+                        node.setScaleY(1.0);
                     }
-                    itemBox.setStyle("-fx-border-color: #fca311; -fx-border-width: 4px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+                    itemBox.setScaleX(1.1);
+                    itemBox.setScaleY(1.1);
                     selectedTarot = tarot;
                     selectedJoker = null;
                     
@@ -310,9 +314,11 @@ public class ShopController {
 
                     itemBox.setOnMouseClicked(e -> {
                         for (javafx.scene.Node node : shopItemsContainer.getChildren()) {
-                            node.setStyle(""); // Clear selection border
+                            node.setScaleX(1.0);
+                            node.setScaleY(1.0);
                         }
-                        itemBox.setStyle("-fx-border-color: #fca311; -fx-border-width: 4px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+                        itemBox.setScaleX(1.1);
+                        itemBox.setScaleY(1.1);
                         selectedVoucher = voucher;
                         selectedJoker = null;
                         selectedTarot = null;

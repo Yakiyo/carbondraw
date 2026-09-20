@@ -144,7 +144,7 @@ public class GameController {
     private Label finalScoreLabel;
 
     @FXML
-    private javafx.scene.control.Button endGameButton;
+    private javafx.scene.layout.HBox loseButtonsBox;
 
     @FXML
     private javafx.scene.layout.HBox winButtonsBox;
@@ -244,6 +244,16 @@ public class GameController {
 
 
 
+
+    @FXML
+    private void handleRetryAnte(ActionEvent event) {
+        GameSession.getInstance().loadFromDatabase();
+        try {
+            App.setRoot("game");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     // =========================================================
     // RENDER JOKERS
@@ -1391,37 +1401,17 @@ private void animatePlayedCards(
     // =========================================================
 
     @FXML
-    private void handleNextRoundAction(
-            ActionEvent event) {
-
-        GameSession session =
-            GameSession.getInstance();
-
-        boolean hasMore =
-            session.advanceAnte();
-
-        if (hasMore) {
-
+    private void handleNextRoundAction(ActionEvent event) {
+        if (GameSession.getInstance().getCurrentAnte() >= GameSession.getInstance().getMaxAntes() && GameSession.getInstance().getCurrentScore() >= GameSession.getInstance().getTargetPoints()) {
             try {
-
-                App.setRoot("game");
-
+                App.setRoot("home");
             } catch (IOException e) {
-
                 e.printStackTrace();
             }
-
         } else {
-
-            // All 10 antes beaten
-            session.endSession();
-
             try {
-
-                App.setRoot("home");
-
+                App.setRoot("game");
             } catch (IOException e) {
-
                 e.printStackTrace();
             }
         }
@@ -2029,14 +2019,14 @@ private void animatePlayedCards(
 
 
                     if (
-                        endGameButton
+                        loseButtonsBox
                         != null
                     ) {
 
-                        endGameButton
+                        loseButtonsBox
                             .setVisible(false);
 
-                        endGameButton
+                        loseButtonsBox
                             .setManaged(false);
                     }
 
@@ -2048,27 +2038,10 @@ private void animatePlayedCards(
 
 
                     if (excess > 0) {
-
-                        GameSession
-                            .getInstance()
-                            .addCoins(
-                                excess
-                            );
-
-
-                        if (
-                            finalScoreLabel
-                            != null
-                        ) {
-
-                            finalScoreLabel.setText(
-                                "Total Score Achieved: "
-                                + currentScore
-                                + "\nCoins Earned: "
-                                + excess
-                            );
+                        GameSession.getInstance().addCoins(excess);
+                        if (finalScoreLabel != null) {
+                            finalScoreLabel.setText("Total Score Achieved: " + currentScore + "\nCoins Earned: " + excess);
                         }
-
                     } else {
 
                         if (
@@ -2081,6 +2054,11 @@ private void animatePlayedCards(
                                 + currentScore
                             );
                         }
+                    }
+                    
+                    boolean hasMore = GameSession.getInstance().advanceAnte();
+                    if (!hasMore && gameOverTitleLabel != null) {
+                        gameOverTitleLabel.setText("You Win!");
                     }
 
 
@@ -2125,14 +2103,14 @@ private void animatePlayedCards(
 
 
                     if (
-                        endGameButton
+                        loseButtonsBox
                         != null
                     ) {
 
-                        endGameButton
+                        loseButtonsBox
                             .setVisible(true);
 
-                        endGameButton
+                        loseButtonsBox
                             .setManaged(true);
                     }
 
@@ -2184,76 +2162,60 @@ private void animatePlayedCards(
         );
 
 
-        // Put selected cards back into deck
-        remainingDeck.addAll(
-            selectedCards
-        );
+        isPlayingHand = true;
 
-        Collections.shuffle(
-            remainingDeck
-        );
+        ParallelTransition discardAnim = new ParallelTransition();
+        List<Card> cardsBeingDiscarded = new ArrayList<>(selectedCards);
 
-
-        // Replace each selected card
-        // in its original position
-        for (Card discardedCard :
-                selectedCards) {
-
-            int index =
-                currentHand.indexOf(
-                    discardedCard
-                );
-
-            if (
-                index != -1
-                &&
-                !remainingDeck.isEmpty()
-            ) {
-
-                currentHand.set(
-                    index,
-                    remainingDeck.remove(0)
-                );
-
-            } else if (index != -1) {
-
-                currentHand.remove(
-                    index
-                );
+        for (Card discardedCard : cardsBeingDiscarded) {
+            StackPane cardNode = cardImageNodes.get(discardedCard);
+            if (cardNode != null) {
+                FadeTransition fade = new FadeTransition(Duration.millis(300), cardNode);
+                fade.setToValue(0);
+                
+                ScaleTransition scale = new ScaleTransition(Duration.millis(300), cardNode);
+                scale.setToX(0.5);
+                scale.setToY(0.5);
+                
+                TranslateTransition translate = new TranslateTransition(Duration.millis(300), cardNode);
+                translate.setByY(100);
+                
+                discardAnim.getChildren().addAll(fade, scale, translate);
             }
         }
 
+        discardAnim.setOnFinished(e -> {
+            // Put selected cards back into deck
+            remainingDeck.addAll(cardsBeingDiscarded);
+            Collections.shuffle(remainingDeck);
 
-        selectedCards.clear();
+            // Replace each selected card in its original position
+            for (Card discardedCard : cardsBeingDiscarded) {
+                int index = currentHand.indexOf(discardedCard);
+                if (index != -1 && !remainingDeck.isEmpty()) {
+                    currentHand.set(index, remainingDeck.remove(0));
+                } else if (index != -1) {
+                    currentHand.remove(index);
+                }
+            }
 
-        discardsLeft--;
+            selectedCards.clear();
+            discardsLeft--;
 
+            if (discardsLabel != null) {
+                discardsLabel.setText(String.valueOf(discardsLeft));
+            }
 
-        if (discardsLabel != null) {
+            if (discardsLeft <= 0 && discardButton != null) {
+                discardButton.setDisable(true);
+            }
 
-            discardsLabel.setText(
-                String.valueOf(
-                    discardsLeft
-                )
-            );
-        }
-
-
-        if (
-            discardsLeft <= 0
-            &&
-            discardButton != null
-        ) {
-
-            discardButton.setDisable(
-                true
-            );
-        }
-
-
-        renderCards(currentHand);
-
-        updateHandInfoDisplay();
+            renderCards(currentHand, true);
+            updateHandInfoDisplay();
+            isPlayingHand = false;
+        });
+        
+        discardAnim.play();
     }
 
 
@@ -2560,8 +2522,6 @@ private void animatePlayedCards(
             selectedTarot = null;
 
             selectedCards.clear();
-
-            session.saveRunToDatabase();
 
 
             // Re-render everything

@@ -21,6 +21,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        isMuted = PlayerDatabase.loadData().isMuted();
+        
         rootContainer = new StackPane();
         rootContainer.getChildren().add(new SwirlBackground());
         
@@ -46,7 +48,9 @@ public class App extends Application {
                 bgMediaPlayer = new MediaPlayer(bgMedia);
                 bgMediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 bgMediaPlayer.setVolume(0.5); // Set a reasonable volume
-                bgMediaPlayer.play();
+                if (!isMuted) {
+                    bgMediaPlayer.play();
+                }
             } else {
                 System.out.println("Background music file not found!");
             }
@@ -67,6 +71,9 @@ public class App extends Application {
                 bgMediaPlayer.pause();
                 isMuted = true;
             }
+            PlayerData pd = PlayerDatabase.loadData();
+            pd.setMuted(isMuted);
+            PlayerDatabase.saveData(pd);
         }
         return isMuted;
     }

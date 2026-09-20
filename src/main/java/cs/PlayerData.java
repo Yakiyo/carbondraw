@@ -5,13 +5,27 @@ import java.util.List;
 
 public class PlayerData {
     private RunData activeRun;
+    private boolean isMuted;
+    private List<TarotData> ownedTarots;
+    private List<TarotData> activeTarots;
 
     public PlayerData() {
         this.activeRun = null;
+        this.isMuted = false;
+        this.ownedTarots = new ArrayList<>();
+        this.activeTarots = new ArrayList<>();
     }
+
+    public List<TarotData> getOwnedTarots() { return ownedTarots; }
+    public void setOwnedTarots(List<TarotData> ownedTarots) { this.ownedTarots = ownedTarots; }
+    public List<TarotData> getActiveTarots() { return activeTarots; }
+    public void setActiveTarots(List<TarotData> activeTarots) { this.activeTarots = activeTarots; }
 
     public RunData getActiveRun() { return activeRun; }
     public void setActiveRun(RunData activeRun) { this.activeRun = activeRun; }
+    
+    public boolean isMuted() { return isMuted; }
+    public void setMuted(boolean muted) { this.isMuted = muted; }
 
     /**
      * Represents a saved run state that can be persisted to JSON.

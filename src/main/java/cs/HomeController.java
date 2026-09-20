@@ -34,6 +34,7 @@ public class HomeController {
 
     @FXML
     public void initialize() {
+        GameSession.getInstance().loadFromDatabase();
         if (statusLabel != null) {
             statusLabel.setText("♠ Ready to deal... Select an option ♥");
         }

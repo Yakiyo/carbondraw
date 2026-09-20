@@ -130,8 +130,10 @@
                     <Label fx:id="gameOverTitleLabel" text="Finished!" styleClass="game-title" style="-fx-font-size: 48px;"/>
                     <Label fx:id="finalScoreLabel" text="Total Score Achieved: 0" styleClass="game-subtitle" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
                     
-                    <Button fx:id="endGameButton" onAction="#handleReturnHome" styleClass="menu-button" text="Return to Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #ff4d4d; -fx-text-fill: white;" />
-                    
+                    <HBox fx:id="loseButtonsBox" alignment="CENTER" spacing="20.0" visible="false" managed="false">
+                        <Button onAction="#handleRetryAnte" styleClass="menu-button" text="Retry Ante" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #fca311; -fx-text-fill: white;" />
+                        <Button onAction="#handleReturnHome" styleClass="menu-button" text="Return to Menu" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #ff4d4d; -fx-text-fill: white;" />
+                    </HBox>
                     <HBox fx:id="winButtonsBox" alignment="CENTER" spacing="20.0" visible="false" managed="false">
                         <Button onAction="#handleGoToShop" styleClass="menu-button" text="Go to Shop" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #2a9df4; -fx-text-fill: white;" />
                         <Button onAction="#handleNextRoundAction" styleClass="menu-button" text="Next Round" style="-fx-pref-width: 250px; -fx-pref-height: 45px; -fx-font-size: 16px; -fx-background-color: #6fe3b1; -fx-text-fill: white;" />

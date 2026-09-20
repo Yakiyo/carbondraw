@@ -55,7 +55,6 @@ public class GameSession {
         
         this.ownedJokers.clear();
         this.activeJokers.clear();
-        this.ownedTarots.clear();
         this.currentDeck = new ArrayList<>(CardData.CARDS); // Copy initial deck
         this.currentShopJokers.clear();
         this.currentShopTarots.clear();
@@ -120,17 +119,18 @@ public class GameSession {
             }
         }
 
-        // Restore tarots
+        // Load tarots from PlayerData (global permanent)
+        PlayerData pd = PlayerDatabase.loadData();
         this.ownedTarots.clear();
-        if (runData.getOwnedTarots() != null) {
-            for (PlayerData.TarotData td : runData.getOwnedTarots()) {
+        if (pd.getOwnedTarots() != null) {
+            for (PlayerData.TarotData td : pd.getOwnedTarots()) {
                 this.ownedTarots.add(tarotFromData(td));
             }
         }
         
         this.activeTarots.clear();
-        if (runData.getActiveTarots() != null) {
-            for (PlayerData.TarotData td : runData.getActiveTarots()) {
+        if (pd.getActiveTarots() != null) {
+            for (PlayerData.TarotData td : pd.getActiveTarots()) {
                 this.activeTarots.add(tarotFromData(td));
             }
         }
@@ -231,11 +231,16 @@ public class GameSession {
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, activeTarotData, deckData, 
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, new ArrayList<>(), new ArrayList<>(), deckData, 
             shopJokersData, shopTarotsData, coins, shopResetUsed, extraHands, extraDiscards,
             ownedVouchers, currentShopVoucher, extraJokerSlots, shopDiscountActive, extraShopSlots, rerollDiscountActive
         );
-        PlayerDatabase.saveRun(runData);
+        
+        PlayerData pd = PlayerDatabase.loadData();
+        pd.setActiveRun(runData);
+        pd.setOwnedTarots(tarotData);
+        pd.setActiveTarots(activeTarotData);
+        PlayerDatabase.saveData(pd);
     }
 
     /**
