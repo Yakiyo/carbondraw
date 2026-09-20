@@ -1,7 +1,7 @@
 /* Balatro-inspired Theme for Carbon Draw */
 
 .root-pane {
-    -fx-background-color: radial-gradient(center 50% 30%, radius 75%, #154734 0%, #0c2b1f 55%, #05130e 100%);
+    -fx-background-color: transparent;
     -fx-padding: 30px;
 }
 

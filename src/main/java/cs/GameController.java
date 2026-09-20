@@ -87,9 +87,6 @@ public class GameController {
     private boolean selectionSoundLoaded = false;
 
     @FXML
-    private Pane backgroundAnimationPane;
-
-    @FXML
     private Label gameInfoLabel;
 
     @FXML
@@ -243,46 +240,10 @@ public class GameController {
         renderJokers(session.getActiveJokers());
         renderTarots(session.getActiveTarots());
         renderCards(currentHand, true);
-
-        initBackgroundAnimation();
     }
 
 
-    // =========================================================
-    // BACKGROUND ANIMATION
-    // =========================================================
 
-    private void initBackgroundAnimation() {
-        if (backgroundAnimationPane == null) return;
-        
-        backgroundAnimationPane.getChildren().clear();
-        
-        for (int row = 0; row < 6; row++) {
-            String text = "CARBONDRAW  ♠  CARBONDRAW  ♥  CARBONDRAW  ♣  CARBONDRAW  ♦  CARBONDRAW  ♠  CARBONDRAW  ♥  CARBONDRAW  ♣  CARBONDRAW  ♦";
-            Label rowLabel = new Label(text);
-            rowLabel.setStyle("-fx-font-family: 'Segoe UI', 'Tahoma', sans-serif; -fx-font-size: 100px; -fx-font-weight: 900; -fx-text-fill: rgba(255, 255, 255, 0.12);");
-            
-            rowLabel.setLayoutX(-2000);
-            rowLabel.setLayoutY(row * 220 - 200);
-            rowLabel.setRotate(-12);
-            
-            backgroundAnimationPane.getChildren().add(rowLabel);
-            
-            boolean movingRight = (row % 2 == 0);
-            
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(80), rowLabel);
-            if (movingRight) {
-                tt.setFromX(0);
-                tt.setToX(2000);
-            } else {
-                tt.setFromX(2000);
-                tt.setToX(0);
-            }
-            tt.setInterpolator(Interpolator.LINEAR);
-            tt.setCycleCount(Animation.INDEFINITE);
-            tt.play();
-        }
-    }
 
     // =========================================================
     // RENDER JOKERS
