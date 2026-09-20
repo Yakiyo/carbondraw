@@ -1229,6 +1229,7 @@ private void animatePlayedCards(
         new ParallelTransition();
 
     double cardWidth = 180;
+    @SuppressWarnings("unused")
     double cardHeight = 260;
 
     /*
