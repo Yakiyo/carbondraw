@@ -87,6 +87,9 @@ public class GameController {
     private boolean selectionSoundLoaded = false;
 
     @FXML
+    private Pane backgroundAnimationPane;
+
+    @FXML
     private Label gameInfoLabel;
 
     @FXML
@@ -240,8 +243,46 @@ public class GameController {
         renderJokers(session.getActiveJokers());
         renderTarots(session.getActiveTarots());
         renderCards(currentHand, true);
+
+        initBackgroundAnimation();
     }
 
+
+    // =========================================================
+    // BACKGROUND ANIMATION
+    // =========================================================
+
+    private void initBackgroundAnimation() {
+        if (backgroundAnimationPane == null) return;
+        
+        backgroundAnimationPane.getChildren().clear();
+        
+        for (int row = 0; row < 6; row++) {
+            String text = "CARBONDRAW  ♠  CARBONDRAW  ♥  CARBONDRAW  ♣  CARBONDRAW  ♦  CARBONDRAW  ♠  CARBONDRAW  ♥  CARBONDRAW  ♣  CARBONDRAW  ♦";
+            Label rowLabel = new Label(text);
+            rowLabel.setStyle("-fx-font-family: 'Segoe UI', 'Tahoma', sans-serif; -fx-font-size: 100px; -fx-font-weight: 900; -fx-text-fill: rgba(255, 255, 255, 0.12);");
+            
+            rowLabel.setLayoutX(-2000);
+            rowLabel.setLayoutY(row * 220 - 200);
+            rowLabel.setRotate(-12);
+            
+            backgroundAnimationPane.getChildren().add(rowLabel);
+            
+            boolean movingRight = (row % 2 == 0);
+            
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(80), rowLabel);
+            if (movingRight) {
+                tt.setFromX(0);
+                tt.setToX(2000);
+            } else {
+                tt.setFromX(2000);
+                tt.setToX(0);
+            }
+            tt.setInterpolator(Interpolator.LINEAR);
+            tt.setCycleCount(Animation.INDEFINITE);
+            tt.play();
+        }
+    }
 
     // =========================================================
     // RENDER JOKERS
@@ -1998,6 +2039,8 @@ private void animatePlayedCards(
 
                         gameOverPopup
                             .setVisible(true);
+                            
+                        playVictorySparkles();
                     }
 
 
@@ -2644,5 +2687,66 @@ private void animatePlayedCards(
 
             handInfoBox.setVisible(false);
         }
+    }
+
+    // =========================================================
+    // VICTORY SPARKLES
+    // =========================================================
+
+    private void playVictorySparkles() {
+        if (gameOverPopup == null) return;
+        
+        int particleCount = 120;
+        List<Node> particles = new ArrayList<>();
+        List<double[]> velocities = new ArrayList<>();
+        
+        for (int i = 0; i < particleCount; i++) {
+            boolean fromLeft = i % 2 == 0;
+            javafx.scene.shape.Circle sparkle = new javafx.scene.shape.Circle(Math.random() * 6 + 4);
+            
+            String[] colors = {"#ffd700", "#ffffff", "#fca311", "#ff4d4d", "#6fe3b1"};
+            sparkle.setFill(javafx.scene.paint.Color.web(colors[(int)(Math.random() * colors.length)]));
+            
+            double startX = fromLeft ? -20 : 1940;
+            double startY = 500 + Math.random() * 200 - 100;
+            
+            sparkle.setTranslateX(startX);
+            sparkle.setTranslateY(startY);
+            
+            double vx = (fromLeft ? 1 : -1) * (15 + Math.random() * 25);
+            double vy = -(15 + Math.random() * 25);
+            
+            particles.add(sparkle);
+            velocities.add(new double[]{vx, vy});
+            
+            gameOverPopup.getChildren().add(sparkle);
+        }
+        
+        javafx.animation.AnimationTimer timer = new javafx.animation.AnimationTimer() {
+            private int frames = 0;
+            @Override
+            public void handle(long now) {
+                frames++;
+                for (int i = 0; i < particles.size(); i++) {
+                    Node p = particles.get(i);
+                    double[] v = velocities.get(i);
+                    
+                    p.setTranslateX(p.getTranslateX() + v[0]);
+                    p.setTranslateY(p.getTranslateY() + v[1]);
+                    
+                    v[1] += 0.8; // gravity
+                    
+                    p.setOpacity(p.getOpacity() - 0.005);
+                }
+                
+                if (frames > 150) {
+                    this.stop();
+                    for (Node p : particles) {
+                        gameOverPopup.getChildren().remove(p);
+                    }
+                }
+            }
+        };
+        timer.start();
     }
 }

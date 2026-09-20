@@ -52,14 +52,7 @@
         </HBox>
         
         <!-- Music Toggle Button on Bottom Right -->
-        <Button AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0" onAction="#handleToggleMusic" style="-fx-background-color: transparent; -fx-cursor: hand;">
-            <graphic>
-                <ImageView fitHeight="40.0" fitWidth="40.0" preserveRatio="true">
-                    <image>
-                        <Image url="@images/mic.jpg" />
-                    </image>
-                </ImageView>
-            </graphic>
+        <Button fx:id="musicToggleButton" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="50.0" onAction="#handleToggleMusic" style="-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 36px; -fx-text-fill: white;" text="🔊">
         </Button>
     </children>
 </AnchorPane>
