@@ -362,13 +362,14 @@ public class ShopController {
                 resetShopButton.setDisable(true);
             }
 
+            int shopSlots = 4 + session.getExtraShopSlots();
             availableJokers = new ArrayList<>(JokerRegistry.JOKERS);
             Collections.shuffle(availableJokers);
-            availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(4, availableJokers.size())));
+            availableJokers = new ArrayList<>(availableJokers.subList(0, Math.min(shopSlots, availableJokers.size())));
 
             List<Tarot> allTarots = new ArrayList<>(TarotRegistry.TAROTS);
             Collections.shuffle(allTarots);
-            availableTarots = new ArrayList<>(allTarots.subList(0, Math.min(4, allTarots.size())));
+            availableTarots = new ArrayList<>(allTarots.subList(0, Math.min(shopSlots, allTarots.size())));
 
             session.getCurrentShopJokers().clear();
             session.getCurrentShopJokers().addAll(availableJokers);

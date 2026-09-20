@@ -63,7 +63,7 @@ public class GameSession {
         this.extraHands = 0;
         this.extraDiscards = 0;
 
-        this.ownedVouchers.clear();
+
         this.currentShopVoucher = null;
         this.extraJokerSlots = 0;
         this.shopDiscountActive = false;
@@ -93,9 +93,10 @@ public class GameSession {
         this.extraHands = runData.getExtraHands();
         this.extraDiscards = runData.getExtraDiscards();
         
+        PlayerData pd = PlayerDatabase.loadData();
         this.ownedVouchers.clear();
-        if (runData.getOwnedVouchers() != null) {
-            this.ownedVouchers.addAll(runData.getOwnedVouchers());
+        if (pd.getOwnedVouchers() != null) {
+            this.ownedVouchers.addAll(pd.getOwnedVouchers());
         }
         this.currentShopVoucher = runData.getCurrentShopVoucher();
         this.extraJokerSlots = runData.getExtraJokerSlots();
@@ -119,18 +120,17 @@ public class GameSession {
             }
         }
 
-        // Load tarots from PlayerData (global permanent)
-        PlayerData pd = PlayerDatabase.loadData();
+        // Load tarots from RunData (tied to run)
         this.ownedTarots.clear();
-        if (pd.getOwnedTarots() != null) {
-            for (PlayerData.TarotData td : pd.getOwnedTarots()) {
+        if (runData.getOwnedTarots() != null) {
+            for (PlayerData.TarotData td : runData.getOwnedTarots()) {
                 this.ownedTarots.add(tarotFromData(td));
             }
         }
         
         this.activeTarots.clear();
-        if (pd.getActiveTarots() != null) {
-            for (PlayerData.TarotData td : pd.getActiveTarots()) {
+        if (runData.getActiveTarots() != null) {
+            for (PlayerData.TarotData td : runData.getActiveTarots()) {
                 this.activeTarots.add(tarotFromData(td));
             }
         }
@@ -231,15 +231,14 @@ public class GameSession {
 
         PlayerData.RunData runData = new PlayerData.RunData(
             difficulty, difficultyMultiplier, currentAnte,
-            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, new ArrayList<>(), new ArrayList<>(), deckData, 
+            maxAntes, baseTargetScore, targetPoints, ownedData, activeData, tarotData, activeTarotData, deckData, 
             shopJokersData, shopTarotsData, coins, shopResetUsed, extraHands, extraDiscards,
-            ownedVouchers, currentShopVoucher, extraJokerSlots, shopDiscountActive, extraShopSlots, rerollDiscountActive
+            currentShopVoucher, extraJokerSlots, shopDiscountActive, extraShopSlots, rerollDiscountActive
         );
         
         PlayerData pd = PlayerDatabase.loadData();
         pd.setActiveRun(runData);
-        pd.setOwnedTarots(tarotData);
-        pd.setActiveTarots(activeTarotData);
+        pd.setOwnedVouchers(ownedVouchers);
         PlayerDatabase.saveData(pd);
     }
 
@@ -274,7 +273,7 @@ public class GameSession {
         this.extraHands = 0;
         this.extraDiscards = 0;
         
-        this.ownedVouchers.clear();
+
         this.currentShopVoucher = null;
         this.extraJokerSlots = 0;
         this.shopDiscountActive = false;

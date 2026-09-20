@@ -7,6 +7,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.ScrollPane?>
 
 <AnchorPane styleClass="root-pane" stylesheets="@home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cs.DeckController" prefWidth="1920.0" prefHeight="1000.0">
     <children>
@@ -37,19 +39,13 @@
             <center>
                 <VBox alignment="TOP_CENTER" spacing="20.0" BorderPane.alignment="CENTER" style="-fx-padding: 30px;">
                     <Label fx:id="deckSectionTitle" text="Your Loadout" style="-fx-font-size: 40px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                    
                     <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10px;">
                         <Label fx:id="activeSectionTitle" text="Active (0/0)" style="-fx-font-size: 24px; -fx-text-fill: #6fe3b1; -fx-font-weight: bold;"/>
-                        <HBox fx:id="activeItemsContainer" alignment="CENTER" spacing="20.0" styleClass="card-slot-container" style="-fx-padding: 20px; -fx-min-height: 280px; -fx-min-width: 800px; -fx-border-color: #6fe3b1; -fx-border-width: 2px; -fx-border-radius: 15px; -fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 15px;">
-                            <!-- Active items injected here -->
-                        </HBox>
-                    </VBox>
-                    
-                    <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10px;">
-                        <Label fx:id="ownedSectionTitle" text="Owned" style="-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                        <HBox fx:id="ownedItemsContainer" alignment="CENTER" spacing="20.0" styleClass="card-slot-container" style="-fx-padding: 20px; -fx-min-height: 280px; -fx-min-width: 800px; -fx-border-color: rgba(255,255,255,0.2); -fx-border-width: 2px; -fx-border-radius: 15px; -fx-background-color: rgba(0,0,0,0.3); -fx-background-radius: 15px;">
-                            <!-- Owned items injected here -->
-                        </HBox>
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" style="-fx-background-color: transparent; -fx-background: transparent;" styleClass="edge-to-edge">
+                            <FlowPane fx:id="allItemsContainer" alignment="CENTER" hgap="40.0" vgap="40.0" style="-fx-padding: 40px; -fx-min-height: 280px; -fx-min-width: 800px; -fx-pref-wrap-length: 1200px;">
+                                <!-- All items injected here -->
+                            </FlowPane>
+                        </ScrollPane>
                     </VBox>
                 </VBox>
             </center>

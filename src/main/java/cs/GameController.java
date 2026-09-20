@@ -1365,7 +1365,7 @@ private void animatePlayedCards(
 
         GameSession
             .getInstance()
-            .endSession();
+            .saveRunToDatabase();
 
         try {
 

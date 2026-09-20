@@ -6,20 +6,16 @@ import java.util.List;
 public class PlayerData {
     private RunData activeRun;
     private boolean isMuted;
-    private List<TarotData> ownedTarots;
-    private List<TarotData> activeTarots;
+    private List<String> ownedVouchers;
 
     public PlayerData() {
         this.activeRun = null;
         this.isMuted = false;
-        this.ownedTarots = new ArrayList<>();
-        this.activeTarots = new ArrayList<>();
+        this.ownedVouchers = new ArrayList<>();
     }
 
-    public List<TarotData> getOwnedTarots() { return ownedTarots; }
-    public void setOwnedTarots(List<TarotData> ownedTarots) { this.ownedTarots = ownedTarots; }
-    public List<TarotData> getActiveTarots() { return activeTarots; }
-    public void setActiveTarots(List<TarotData> activeTarots) { this.activeTarots = activeTarots; }
+    public List<String> getOwnedVouchers() { return ownedVouchers; }
+    public void setOwnedVouchers(List<String> ownedVouchers) { this.ownedVouchers = ownedVouchers; }
 
     public RunData getActiveRun() { return activeRun; }
     public void setActiveRun(RunData activeRun) { this.activeRun = activeRun; }
@@ -50,7 +46,7 @@ public class PlayerData {
         private int extraHands;
         private int extraDiscards;
 
-        private List<String> ownedVouchers;
+
         private String currentShopVoucher;
         private int extraJokerSlots;
         private boolean shopDiscountActive;
@@ -70,7 +66,7 @@ public class PlayerData {
             this.extraHands = 0;
             this.extraDiscards = 0;
             
-            this.ownedVouchers = new ArrayList<>();
+
             this.currentShopVoucher = null;
             this.extraJokerSlots = 0;
             this.shopDiscountActive = false;
@@ -84,7 +80,7 @@ public class PlayerData {
                        List<TarotData> ownedTarots, List<TarotData> activeTarots, List<CardData> deck, 
                        List<JokerData> shopJokers, List<TarotData> shopTarots, 
                        int coins, boolean shopResetUsed, int extraHands, int extraDiscards,
-                       List<String> ownedVouchers, String currentShopVoucher, int extraJokerSlots,
+                       String currentShopVoucher, int extraJokerSlots,
                        boolean shopDiscountActive, int extraShopSlots, boolean rerollDiscountActive) {
             this.difficulty = difficulty;
             this.difficultyMultiplier = difficultyMultiplier;
@@ -104,7 +100,7 @@ public class PlayerData {
             this.extraHands = extraHands;
             this.extraDiscards = extraDiscards;
             
-            this.ownedVouchers = ownedVouchers != null ? ownedVouchers : new ArrayList<>();
+
             this.currentShopVoucher = currentShopVoucher;
             this.extraJokerSlots = extraJokerSlots;
             this.shopDiscountActive = shopDiscountActive;
@@ -130,7 +126,7 @@ public class PlayerData {
         public int getExtraHands() { return extraHands; }
         public int getExtraDiscards() { return extraDiscards; }
         
-        public List<String> getOwnedVouchers() { return ownedVouchers; }
+
         public String getCurrentShopVoucher() { return currentShopVoucher; }
         public int getExtraJokerSlots() { return extraJokerSlots; }
         public boolean isShopDiscountActive() { return shopDiscountActive; }

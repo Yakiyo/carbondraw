@@ -9,8 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -21,10 +21,7 @@ public class DeckController {
     @FXML private Label deckSectionTitle;
     
     @FXML private Label activeSectionTitle;
-    @FXML private HBox activeItemsContainer;
-    
-    @FXML private Label ownedSectionTitle;
-    @FXML private HBox ownedItemsContainer;
+    @FXML private FlowPane allItemsContainer;
 
     @FXML
     public void initialize() {
@@ -51,29 +48,22 @@ public class DeckController {
 
         int maxJokers = 3 + session.getExtraJokerSlots();
         if (activeSectionTitle != null) {
-            activeSectionTitle.setText(String.format("Active Jokers (%d/%d)", active.size(), maxJokers));
+            activeSectionTitle.setText(String.format("Active: %d / %d", active.size(), maxJokers));
         }
-        if (ownedSectionTitle != null) {
-            ownedSectionTitle.setText("Owned Jokers");
-        }
-        if (activeItemsContainer != null) activeItemsContainer.getChildren().clear();
-        if (ownedItemsContainer != null) ownedItemsContainer.getChildren().clear();
+        
+        if (allItemsContainer != null) allItemsContainer.getChildren().clear();
 
         if (owned.isEmpty()) {
             Label emptyLabel = new Label("No jokers owned yet. Buy some from the Shop!");
             emptyLabel.setStyle("-fx-text-fill: rgba(255, 255, 255, 0.5); -fx-font-size: 20px;");
-            if (ownedItemsContainer != null) ownedItemsContainer.getChildren().add(emptyLabel);
+            if (allItemsContainer != null) allItemsContainer.getChildren().add(emptyLabel);
             return;
         }
 
         for (Joker joker : owned) {
             boolean isActive = active.stream().anyMatch(j -> j.name().equals(joker.name()));
             VBox itemBox = createJokerCardView(joker, isActive);
-            if (isActive && activeItemsContainer != null) {
-                activeItemsContainer.getChildren().add(itemBox);
-            } else if (!isActive && ownedItemsContainer != null) {
-                ownedItemsContainer.getChildren().add(itemBox);
-            }
+            if (allItemsContainer != null) allItemsContainer.getChildren().add(itemBox);
         }
     }
 
@@ -113,15 +103,14 @@ public class DeckController {
         tooltip.setShowDelay(Duration.millis(100));
         Tooltip.install(imageWrapper, tooltip);
 
-        Label statusLabel = new Label(isActive ? "✓ ACTIVE" : "INACTIVE");
-        statusLabel.setStyle(isActive 
-            ? "-fx-text-fill: #6fe3b1; -fx-font-size: 16px; -fx-font-weight: bold;"
-            : "-fx-text-fill: rgba(255,255,255,0.4); -fx-font-size: 16px; -fx-font-weight: bold;");
-
         if (isActive) {
-            itemBox.setStyle("-fx-border-color: #6fe3b1; -fx-border-width: 3px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px;");
+            itemBox.setStyle("-fx-padding: 10px;");
+            itemBox.setScaleX(1.15);
+            itemBox.setScaleY(1.15);
         } else {
-            itemBox.setStyle("-fx-border-color: rgba(255,255,255,0.15); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px;");
+            itemBox.setStyle("-fx-padding: 10px;");
+            itemBox.setScaleX(1.0);
+            itemBox.setScaleY(1.0);
         }
 
         itemBox.setOnMouseClicked(e -> {
@@ -129,7 +118,7 @@ public class DeckController {
             handleShowJokers(null);
         });
         itemBox.setCursor(javafx.scene.Cursor.HAND);
-        itemBox.getChildren().addAll(imageWrapper, statusLabel);
+        itemBox.getChildren().addAll(imageWrapper);
         
         return itemBox;
     }
@@ -152,36 +141,29 @@ public class DeckController {
 
     @FXML
     private void handleShowTarots(ActionEvent event) {
-        if (deckSectionTitle != null) deckSectionTitle.setText("Tarot Loadout");
+        if (deckSectionTitle != null) deckSectionTitle.setText("Breakthrough Loadout");
         
         GameSession session = GameSession.getInstance();
         List<Tarot> owned = session.getOwnedTarots();
         List<Tarot> active = session.getActiveTarots();
 
         if (activeSectionTitle != null) {
-            activeSectionTitle.setText(String.format("Active Tarots (%d/5)", active.size()));
+            activeSectionTitle.setText(String.format("Active: %d / 5", active.size()));
         }
-        if (ownedSectionTitle != null) {
-            ownedSectionTitle.setText("Owned Tarots");
-        }
-        if (activeItemsContainer != null) activeItemsContainer.getChildren().clear();
-        if (ownedItemsContainer != null) ownedItemsContainer.getChildren().clear();
+        
+        if (allItemsContainer != null) allItemsContainer.getChildren().clear();
 
         if (owned.isEmpty()) {
-            Label emptyLabel = new Label("No tarots owned yet. Buy some from the Shop!");
+            Label emptyLabel = new Label("No breakthroughs owned yet. Buy some from the Shop!");
             emptyLabel.setStyle("-fx-text-fill: rgba(255, 255, 255, 0.5); -fx-font-size: 20px;");
-            if (ownedItemsContainer != null) ownedItemsContainer.getChildren().add(emptyLabel);
+            if (allItemsContainer != null) allItemsContainer.getChildren().add(emptyLabel);
             return;
         }
 
         for (Tarot tarot : owned) {
             boolean isActive = active.stream().anyMatch(t -> t.name().equals(tarot.name()));
             VBox itemBox = createTarotCardView(tarot, isActive);
-            if (isActive && activeItemsContainer != null) {
-                activeItemsContainer.getChildren().add(itemBox);
-            } else if (!isActive && ownedItemsContainer != null) {
-                ownedItemsContainer.getChildren().add(itemBox);
-            }
+            if (allItemsContainer != null) allItemsContainer.getChildren().add(itemBox);
         }
     }
 
@@ -221,15 +203,14 @@ public class DeckController {
         tooltip.setShowDelay(Duration.millis(100));
         Tooltip.install(imageWrapper, tooltip);
 
-        Label statusLabel = new Label(isActive ? "✓ ACTIVE" : "INACTIVE");
-        statusLabel.setStyle(isActive 
-            ? "-fx-text-fill: #6fe3b1; -fx-font-size: 16px; -fx-font-weight: bold;"
-            : "-fx-text-fill: rgba(255,255,255,0.4); -fx-font-size: 16px; -fx-font-weight: bold;");
-
         if (isActive) {
-            itemBox.setStyle("-fx-border-color: #6fe3b1; -fx-border-width: 3px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px;");
+            itemBox.setStyle("-fx-padding: 10px;");
+            itemBox.setScaleX(1.15);
+            itemBox.setScaleY(1.15);
         } else {
-            itemBox.setStyle("-fx-border-color: rgba(255,255,255,0.15); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px;");
+            itemBox.setStyle("-fx-padding: 10px;");
+            itemBox.setScaleX(1.0);
+            itemBox.setScaleY(1.0);
         }
 
         itemBox.setOnMouseClicked(e -> {
@@ -237,7 +218,7 @@ public class DeckController {
             handleShowTarots(null);
         });
         itemBox.setCursor(javafx.scene.Cursor.HAND);
-        itemBox.getChildren().addAll(imageWrapper, statusLabel);
+        itemBox.getChildren().addAll(imageWrapper);
         
         return itemBox;
     }
@@ -260,62 +241,57 @@ public class DeckController {
     @FXML
     private void handleShowVouchers(ActionEvent event) {
         if (deckSectionTitle != null) deckSectionTitle.setText("Vouchers");
-        if (activeSectionTitle != null) activeSectionTitle.setText("");
-        if (ownedSectionTitle != null) ownedSectionTitle.setText("");
-        if (activeItemsContainer != null) activeItemsContainer.getChildren().clear();
+        if (activeSectionTitle != null) activeSectionTitle.setText("All Permanent Vouchers");
+        if (allItemsContainer != null) allItemsContainer.getChildren().clear();
         
-        if (ownedItemsContainer != null) {
-            ownedItemsContainer.getChildren().clear();
-            GameSession session = GameSession.getInstance();
-            List<String> ownedVouchers = session.getOwnedVouchers();
-            
-            if (ownedVouchers.isEmpty()) {
-                Label placeholder = new Label("No Vouchers owned yet. Find them in the Shop!");
-                placeholder.setStyle("-fx-text-fill: rgba(255, 255, 255, 0.5); -fx-font-size: 24px;");
-                ownedItemsContainer.getChildren().add(placeholder);
-            } else {
-                for (String vName : ownedVouchers) {
-                    Voucher voucher = VoucherRegistry.getByName(vName);
-                    if (voucher != null) {
-                        VBox itemBox = new VBox();
-                        itemBox.setAlignment(javafx.geometry.Pos.CENTER);
-                        itemBox.setSpacing(10);
+        GameSession session = GameSession.getInstance();
+        List<String> ownedVouchers = session.getOwnedVouchers();
+        
+        if (ownedVouchers.isEmpty()) {
+            Label placeholder = new Label("No Vouchers owned yet. Find them in the Shop!");
+            placeholder.setStyle("-fx-text-fill: rgba(255, 255, 255, 0.5); -fx-font-size: 24px;");
+            if (allItemsContainer != null) allItemsContainer.getChildren().add(placeholder);
+        } else {
+            for (String vName : ownedVouchers) {
+                Voucher voucher = VoucherRegistry.getByName(vName);
+                if (voucher != null) {
+                    VBox itemBox = new VBox();
+                    itemBox.setAlignment(javafx.geometry.Pos.CENTER);
+                    itemBox.setSpacing(10);
 
-                        StackPane imageWrapper = new StackPane();
-                        imageWrapper.getStyleClass().add("joker-image-wrapper");
+                    StackPane imageWrapper = new StackPane();
+                    imageWrapper.getStyleClass().add("joker-image-wrapper");
 
-                        try {
-                            Image img = new Image(getClass().getResourceAsStream(voucher.imagePath()));
-                            ImageView imgView = new ImageView(img);
-                            imgView.setFitWidth(150);
-                            imgView.setFitHeight(150);
-                            imgView.setPreserveRatio(true);
+                    try {
+                        Image img = new Image(getClass().getResourceAsStream(voucher.imagePath()));
+                        ImageView imgView = new ImageView(img);
+                        imgView.setFitWidth(150);
+                        imgView.setFitHeight(150);
+                        imgView.setPreserveRatio(true);
 
-                            Rectangle clip = new Rectangle(150, 150);
-                            clip.setArcWidth(15);
-                            clip.setArcHeight(15);
-                            imgView.setClip(clip);
+                        Rectangle clip = new Rectangle(150, 150);
+                        clip.setArcWidth(15);
+                        clip.setArcHeight(15);
+                        imgView.setClip(clip);
 
-                            imageWrapper.getChildren().add(imgView);
-                        } catch (Exception e) {
-                            Label errorLabel = new Label(voucher.name());
-                            errorLabel.setStyle("-fx-text-fill: white; -fx-padding: 10px;");
-                            imageWrapper.getChildren().add(errorLabel);
-                            imageWrapper.setPrefSize(150, 150);
-                        }
-
-                        Tooltip tooltip = new Tooltip(voucher.name() + "\n" + voucher.description());
-                        tooltip.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-                        tooltip.setShowDelay(Duration.millis(100));
-                        Tooltip.install(imageWrapper, tooltip);
-
-                        Label statusLabel = new Label("OWNED");
-                        statusLabel.setStyle("-fx-text-fill: #fca311; -fx-font-size: 16px; -fx-font-weight: bold;");
-                        
-                        itemBox.setStyle("-fx-border-color: #fca311; -fx-border-width: 3px; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-padding: 10px;");
-                        itemBox.getChildren().addAll(imageWrapper, statusLabel);
-                        ownedItemsContainer.getChildren().add(itemBox);
+                        imageWrapper.getChildren().add(imgView);
+                    } catch (Exception e) {
+                        Label errorLabel = new Label(voucher.name());
+                        errorLabel.setStyle("-fx-text-fill: white; -fx-padding: 10px;");
+                        imageWrapper.getChildren().add(errorLabel);
+                        imageWrapper.setPrefSize(150, 150);
                     }
+
+                    Tooltip tooltip = new Tooltip(voucher.name() + "\n" + voucher.description());
+                    tooltip.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+                    tooltip.setShowDelay(Duration.millis(100));
+                    Tooltip.install(imageWrapper, tooltip);
+                    
+                    itemBox.setStyle("-fx-padding: 10px;");
+                    itemBox.setScaleX(1.15);
+                    itemBox.setScaleY(1.15);
+                    itemBox.getChildren().addAll(imageWrapper);
+                    if (allItemsContainer != null) allItemsContainer.getChildren().add(itemBox);
                 }
             }
         }

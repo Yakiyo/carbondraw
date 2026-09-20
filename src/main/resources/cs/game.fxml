@@ -68,7 +68,7 @@
                 <top>
                     <HBox alignment="CENTER_LEFT" spacing="30.0" prefHeight="170.0" BorderPane.alignment="CENTER">
                         <!-- Jokers Area -->
-                        <HBox fx:id="jokersContainer" alignment="CENTER_LEFT" spacing="15.0" prefWidth="380.0" maxWidth="380.0" minWidth="380.0" styleClass="card-slot-container" />
+                        <HBox fx:id="jokersContainer" alignment="CENTER_LEFT" spacing="15.0" HBox.hgrow="SOMETIMES" styleClass="card-slot-container" />
                         
                         <!-- Tarot Cards Area (Placeholder) -->
                         <HBox fx:id="tarotsContainer" alignment="CENTER" HBox.hgrow="ALWAYS" spacing="15.0" styleClass="card-slot-container" />
